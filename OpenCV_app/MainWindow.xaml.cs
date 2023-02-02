@@ -23,25 +23,12 @@ namespace OpenCV_app
             InitializeComponent();
         }
 
-
-        private void Go_CLick(object sender, RoutedEventArgs e)
-        {
-            var img = CvInvoke.Imread(((BitmapImage)Image_sourse.Source).UriSource.LocalPath, ImreadModes.Color);
-            var result = new Mat();
-            CvInvoke.Canny(img, result, 100, 200);
-            var bitmap = result.ToBitmap();
-            Image_result.Source = Imaging.CreateBitmapSourceFromHBitmap(
-                bitmap.GetHbitmap(),
-                IntPtr.Zero,
-                Int32Rect.Empty,
-                BitmapSizeOptions.FromEmptyOptions());
-        }
-        
+        private string _usageFilterName = "None";
 
         private void SaveImage(object sender, MouseButtonEventArgs e)
         {
             var sourceFile = ((BitmapImage)Image_sourse.Source).UriSource.AbsolutePath;
-            var defaultFileName = "OpenCV_" //потом можно будет добавить какой метод использовался для обработки
+            var defaultFileName = "OpenCV_" + _usageFilterName + "_"
                                   +Path.GetFileNameWithoutExtension(sourceFile) +
                                   "_" + DateTime.Now.ToString("yyyyMMdd_HHmmss");
     
@@ -65,6 +52,40 @@ namespace OpenCV_app
             };
             if (openFileDialog.ShowDialog() != true) return;
             Image_sourse.Source = new BitmapImage(new Uri(openFileDialog.FileName));
+        }
+
+        private void Add_Canny_filter(object sender, RoutedEventArgs e)
+        {
+            var threshold1 = 100;
+            var threshold2 = 200;
+            
+            var img = CvInvoke.Imread(((BitmapImage)Image_sourse.Source).UriSource.LocalPath, ImreadModes.Color);
+            var result = new Mat();
+            CvInvoke.Canny(img, result, threshold1, threshold2);
+            var bitmap = result.ToBitmap();
+            Image_result.Source = Imaging.CreateBitmapSourceFromHBitmap(
+                bitmap.GetHbitmap(),
+                nint.Zero,
+                Int32Rect.Empty,
+                BitmapSizeOptions.FromEmptyOptions());
+            _usageFilterName = "CannyFilter";
+        }
+
+        private void Add_CellShading(object sender, RoutedEventArgs e)
+        {
+            var threshold = 100;
+            var maxValue = 255;
+
+            var img = CvInvoke.Imread(((BitmapImage)Image_sourse.Source).UriSource.LocalPath, ImreadModes.Color);
+            var result = new Mat();
+            CvInvoke.Threshold(img, result, threshold, maxValue, ThresholdType.Binary);
+            var bitmap = result.ToBitmap();
+            Image_result.Source = Imaging.CreateBitmapSourceFromHBitmap(
+                bitmap.GetHbitmap(),
+                IntPtr.Zero,
+                Int32Rect.Empty,
+                BitmapSizeOptions.FromEmptyOptions());
+            _usageFilterName = "CellShading";
         }
     }
 }

@@ -4,20 +4,31 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="MainWindow" Height="800" Width="450">
+        Title="OpenCV_app" Height="800" Width="450">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="0.45*"></RowDefinition>
             <RowDefinition Height="0.05*"></RowDefinition>
             <RowDefinition Height="0.45*"></RowDefinition>
+            <RowDefinition Height="0.1*"></RowDefinition>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition></ColumnDefinition>
-            <ColumnDefinition></ColumnDefinition>
-            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition Width="0.15*"></ColumnDefinition>
+            <ColumnDefinition Width="0.7*"></ColumnDefinition>
+            <ColumnDefinition Width="0.15*"></ColumnDefinition>
         </Grid.ColumnDefinitions>
         <Image Grid.Row="0" Grid.Column="1" x:Name="Image_sourse" Source="Data/placeholder.png" MouseLeftButtonDown="LoadImage"/>
-        <Button Grid.Row="1" Grid.Column="1" x:Name="Button" Content="Go!" Click="Go_CLick"></Button>
-        <Image Grid.Row="2" Grid.Column="1" x:Name="Image_result" MouseLeftButtonDown="SaveImage"/>
+        <Grid Grid.Row="1" Grid.Column="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Button Grid.Column="0"   Content="Canny" Click="Add_Canny_filter" Margin="0 0 10 0 "/>
+            <Button Grid.Column="1"  Content="CellShading" Click="Add_CellShading" Margin="10 0 0 0"/>
+        </Grid>
+        <Image Grid.Row="2" Grid.Column="1" x:Name="Image_result" Source="Data/placeholder.png" MouseLeftButtonDown="SaveImage"/>
+        <Grid Grid.Row="3" Grid.ColumnSpan="3" Background="Black">
+            <TextBlock x:Name="Block" VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="JetBrains Mono" FontSize="18px" Text="Made by ezzha and lstaff"  Foreground="Azure"/>
+        </Grid>
     </Grid>
 </Window>
