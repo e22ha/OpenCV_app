@@ -22,9 +22,13 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition></ColumnDefinition>
                 <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
             </Grid.ColumnDefinitions>
             <Button Grid.Column="0"   Content="Canny" Click="Add_Canny_filter" Margin="0 0 10 0 "/>
             <Button Grid.Column="1"  Content="CellShading" Click="Add_CellShading" Margin="10 0 0 0"/>
+            <Button Grid.Column="2"  Content="Start" Click="StartCapture_Click" Margin="10 0 0 0"/>
+            <Button Grid.Column="3"  Content="Stop" Click="StopCapture_Click" Margin="10 0 0 0"/>
         </Grid>
         <Image Grid.Row="2" Grid.Column="1" x:Name="Image_result" Source="Data/placeholder.png" MouseLeftButtonDown="SaveImage"/>
         <Grid Grid.Row="3" Grid.ColumnSpan="3" Background="Black">

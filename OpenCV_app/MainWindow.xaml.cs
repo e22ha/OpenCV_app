@@ -8,6 +8,7 @@ using Emgu.CV.CvEnum;
 using Microsoft.Win32;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Threading.Tasks;
 using System.Windows.Interop;
 
 
@@ -87,5 +88,44 @@ namespace OpenCV_app
                 BitmapSizeOptions.FromEmptyOptions());
             _usageFilterName = "CellShading";
         }
+        
+        private VideoCapture _capture;
+        private bool _captureInProgress;
+
+        private void StartCapture_Click(object sender, RoutedEventArgs e)
+        {
+            if (_capture != null) _capture.Dispose();
+            _capture = new VideoCapture();
+            _captureInProgress = true;
+            Task.Factory.StartNew(CaptureFrame);
+        }
+
+        private void CaptureFrame()
+        {
+            while (_captureInProgress)
+            {
+                var frame = _capture.QueryFrame();
+                var threshold1 = 100;
+                var threshold2 = 200;
+        
+                var result = new Mat();
+                CvInvoke.Canny(frame, result, threshold1, threshold2);
+                var bitmap = result.ToBitmap();
+                Image_result.Dispatcher.Invoke(() =>
+                {
+                    Image_result.Source = Imaging.CreateBitmapSourceFromHBitmap(
+                        bitmap.GetHbitmap(),
+                        IntPtr.Zero,
+                        Int32Rect.Empty,
+                        BitmapSizeOptions.FromEmptyOptions());
+                });
+            }
+        }
+
+        private void StopCapture_Click(object sender, RoutedEventArgs e)
+        {
+            _captureInProgress = false;
+        }
+
     }
 }
