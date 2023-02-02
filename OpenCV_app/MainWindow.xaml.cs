@@ -1,24 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using Emgu.CV;
 using Emgu.CV.CvEnum;
-using Emgu.CV.Structure;
-using Emgu.CV.Util;
 using Microsoft.Win32;
-using Path = System.IO.Path;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.Windows.Interop;
 
 
 namespace OpenCV_app
@@ -33,14 +23,24 @@ namespace OpenCV_app
             InitializeComponent();
         }
 
+
         private void Go_CLick(object sender, RoutedEventArgs e)
         {
-            ImageBox_result.Source = ImageBox_sourse.Source;
+            var img = CvInvoke.Imread(((BitmapImage)Image_sourse.Source).UriSource.LocalPath, ImreadModes.Color);
+            var result = new Mat();
+            CvInvoke.Canny(img, result, 100, 200);
+            var bitmap = result.ToBitmap();
+            Image_result.Source = Imaging.CreateBitmapSourceFromHBitmap(
+                bitmap.GetHbitmap(),
+                IntPtr.Zero,
+                Int32Rect.Empty,
+                BitmapSizeOptions.FromEmptyOptions());
         }
+        
 
         private void SaveImage(object sender, MouseButtonEventArgs e)
         {
-            var sourceFile = ((BitmapImage)ImageBox_sourse.Source).UriSource.AbsolutePath;
+            var sourceFile = ((BitmapImage)Image_sourse.Source).UriSource.AbsolutePath;
             var defaultFileName = "OpenCV_" //потом можно будет добавить какой метод использовался для обработки
                                   +Path.GetFileNameWithoutExtension(sourceFile) +
                                   "_" + DateTime.Now.ToString("yyyyMMdd_HHmmss");
@@ -52,21 +52,19 @@ namespace OpenCV_app
             };
             if (saveFileDialog.ShowDialog() != true) return;
             BitmapEncoder encoder = new PngBitmapEncoder();
-            encoder.Frames.Add(BitmapFrame.Create((BitmapSource)ImageBox_result.Source));
+            encoder.Frames.Add(BitmapFrame.Create((BitmapSource)Image_result.Source));
             using var stream = new FileStream(saveFileDialog.FileName, FileMode.Create);
             encoder.Save(stream);
         }
 
         private void LoadImage(object sender, MouseButtonEventArgs e)
         {
-            var openFileDialog = new Microsoft.Win32.OpenFileDialog
+            var openFileDialog = new OpenFileDialog
             {
                 Filter = "Image files (*.png;*.jpeg;*.jpg)|*.png;*.jpeg;*.jpg"
             };
-            if (openFileDialog.ShowDialog() == true)
-            {
-                ImageBox_sourse.Source = new BitmapImage(new Uri(openFileDialog.FileName));
-            }
+            if (openFileDialog.ShowDialog() != true) return;
+            Image_sourse.Source = new BitmapImage(new Uri(openFileDialog.FileName));
         }
     }
 }

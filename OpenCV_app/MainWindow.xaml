@@ -16,8 +16,8 @@
             <ColumnDefinition></ColumnDefinition>
             <ColumnDefinition></ColumnDefinition>
         </Grid.ColumnDefinitions>
-        <Image Grid.Row="0" Grid.Column="1" x:Name="ImageBox_sourse" Source="Data/placeholder.png" MouseLeftButtonDown="LoadImage"/>
+        <Image Grid.Row="0" Grid.Column="1" x:Name="Image_sourse" Source="Data/placeholder.png" MouseLeftButtonDown="LoadImage"/>
         <Button Grid.Row="1" Grid.Column="1" x:Name="Button" Content="Go!" Click="Go_CLick"></Button>
-        <Image Grid.Row="2" Grid.Column="1" x:Name="ImageBox_result" MouseLeftButtonDown="SaveImage"/>
+        <Image Grid.Row="2" Grid.Column="1" x:Name="Image_result" MouseLeftButtonDown="SaveImage"/>
     </Grid>
 </Window>
