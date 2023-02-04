@@ -7,9 +7,9 @@
         Title="OpenCV_app" Height="800" Width="450">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="0.45*"></RowDefinition>
-            <RowDefinition Height="0.05*"></RowDefinition>
-            <RowDefinition Height="0.45*"></RowDefinition>
+            <RowDefinition Height="0.4*"></RowDefinition>
+            <RowDefinition Height="0.1*"></RowDefinition>
+            <RowDefinition Height="0.4*"></RowDefinition>
             <RowDefinition Height="0.1*"></RowDefinition>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
@@ -20,15 +20,44 @@
         <Image Grid.Row="0" Grid.Column="1" x:Name="Image_sourse" Source="Data/placeholder.png" MouseLeftButtonDown="LoadImage"/>
         <Grid Grid.Row="1" Grid.Column="1">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition></ColumnDefinition>
-                <ColumnDefinition></ColumnDefinition>
-                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition Width="Auto"></ColumnDefinition>
                 <ColumnDefinition></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <Button Grid.Column="0"   Content="Canny" Click="Add_Canny_filter" Margin="0 0 10 0 "/>
-            <Button Grid.Column="1"  Content="CellShading" Click="Add_CellShading" Margin="10 0 0 0"/>
-            <Button Grid.Column="2"  Content="Start" Click="StartCapture_Click" Margin="10 0 0 0"/>
-            <Button Grid.Column="3"  Content="Stop" Click="StopCapture_Click" Margin="10 0 0 0"/>
+            <Grid.RowDefinitions>
+                <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
+            </Grid.RowDefinitions>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                </Grid.RowDefinitions>
+                <CheckBox Grid.Row="0"   Content="Canny" Click="Check_canny"/>
+                <CheckBox Grid.Row="1"  Content="CellShading" Click="Check_cellShading"/>
+            </Grid>
+                <Grid Grid.Column="1" Margin="20 0 0 0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"></ColumnDefinition>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                        <ColumnDefinition Width="Auto"></ColumnDefinition>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="t1" TextAlignment="Right"/>
+                    <Slider Grid.Row="0" Grid.Column="1" x:Name="Slider_t1" Value="100" Minimum="0" Maximum="255" Margin=" 5 0 5 0"/>
+                    <TextBlock Grid.Column="2" Text="t2" TextAlignment="Right"/>
+                    <Slider Grid.Row="0" Grid.Column="3" x:Name="Slider_t2"  Value="200" Minimum="0" Maximum="255" Margin=" 5 0 5 0"/>
+                    <TextBlock Grid.Row="1" Text="v" TextAlignment="Right"/>
+                    <Slider Grid.Row="1" Grid.Column="1" x:Name="Slider_v" Value="255" Minimum="0" Maximum="255" Margin=" 5 0 5 0"/>
+                    <TextBlock Grid.Row="1" Grid.Column="2" Text="t" TextAlignment="Right"/>
+                    <Slider Grid.Row="1" Grid.Column="3"  x:Name="Slider_t" Value="100" Minimum="0" Maximum="255" Margin=" 5 0 5 0"/>
+                </Grid>
+  
+            <Button Grid.Row="1" Grid.Column="0"  Content="🖼" Click="AddFilter_Click" Margin="10 0 0 0"/>
+            <Button Grid.Row="1"  Grid.Column="1"  Content="🎥" Click="Camera_Click" Margin="10 0 0 0"/>
         </Grid>
         <Image Grid.Row="2" Grid.Column="1" x:Name="Image_result" Source="Data/placeholder.png" MouseLeftButtonDown="SaveImage"/>
         <Grid Grid.Row="3" Grid.ColumnSpan="3" Background="Black">
