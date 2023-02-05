@@ -1,8 +1,6 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Threading;
 using Emgu.CV;
 using Emgu.CV.CvEnum;
 
@@ -17,7 +15,7 @@ public partial class CameraView : Window
         InitializeComponent();
         _capture = new VideoCapture();
         CameraOn();
-        this.Closing += MainWindow_Closing;
+        Closing += MainWindow_Closing;
     }
 
     private void MainWindow_Closing(object? sender, CancelEventArgs e)

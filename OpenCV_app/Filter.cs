@@ -1,5 +1,7 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using System.Windows.Interop;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Emgu.CV;
 
@@ -7,7 +9,7 @@ namespace OpenCV_app;
 
 public class Filter
 {
-    public static BitmapSource BitmapSourceFromHBitmap(Mat result)
+    public static ImageSource BitmapSourceFromHBitmap(Mat result)
     {
         var bitmap = result.ToBitmap();
         var bitmapSourceFromHBitmap = Imaging.CreateBitmapSourceFromHBitmap(
@@ -17,6 +19,8 @@ public class Filter
             BitmapSizeOptions.FromEmptyOptions());
         return bitmapSourceFromHBitmap;
     }
+    
+
     
     public static int t1 { get; set; }
     public static int t2 { get; set; }

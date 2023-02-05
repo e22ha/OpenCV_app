@@ -3,8 +3,12 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="VideoPlayer" Height="450" Width="800">
     <Grid>
-        <MediaElement x:Name="mediaElement" LoadedBehavior="Manual" />
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Bottom">
+        <Image x:Name="Image"/>
+        <MediaElement x:Name="mediaElement" LoadedBehavior="Manual" />
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Bottom">
+            <CheckBox x:Name="Box" Click="Box_OnClick"/>
             <Button x:Name="playButton" Content="Play" Click="PlayButton_Click"/>
             <Slider x:Name="volumeSlider" Width="150" Value="50" Maximum="100"/>
             <Slider x:Name="seekSlider" Width="400" Value="0" Thumb.DragStarted="SeekSlider_DragStarted" Thumb.DragCompleted="SeekSlider_DragCompleted"  Maximum="100" IsMoveToPointEnabled="True"/>
