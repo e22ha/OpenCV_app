@@ -7,6 +7,7 @@
         Title="OpenCV_app" Height="800" Width="450">
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="0.05*"></RowDefinition>
             <RowDefinition Height="0.4*"></RowDefinition>
             <RowDefinition Height="0.1*"></RowDefinition>
             <RowDefinition Height="0.4*"></RowDefinition>
@@ -17,8 +18,17 @@
             <ColumnDefinition Width="0.7*"></ColumnDefinition>
             <ColumnDefinition Width="0.15*"></ColumnDefinition>
         </Grid.ColumnDefinitions>
-        <Image Grid.Row="0" Grid.Column="1" x:Name="Image_sourse" Source="Data/placeholder.png" MouseLeftButtonDown="LoadImage"/>
-        <Grid Grid.Row="1" Grid.Column="1">
+        <Grid Grid.ColumnSpan="3" HorizontalAlignment="Center">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                <ColumnDefinition Width="Auto"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Button Grid.Row="0" Grid.Column="0" Content=" 🎥 " Click="Camera_Click" Padding="25 0" Margin="10 5 10 5" />
+            <Button Grid.Row="0" Grid.Column="1" Content=" 🎞 " Click="VVideoView" Padding="25 0" Margin="10 5 10 5" />
+        </Grid>
+        <Image Grid.Row="1" Grid.Column="1" x:Name="Image_sourse" Source="Data/placeholder.png"
+               MouseLeftButtonDown="LoadImage" />
+        <Grid Grid.Row="2" Grid.Column="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"></ColumnDefinition>
                 <ColumnDefinition></ColumnDefinition>
@@ -32,36 +42,42 @@
                     <RowDefinition></RowDefinition>
                     <RowDefinition></RowDefinition>
                 </Grid.RowDefinitions>
-                <CheckBox Grid.Row="0"   Content="Canny" Click="Check_canny"/>
-                <CheckBox Grid.Row="1"  Content="CellShading" Click="Check_cellShading"/>
+                <CheckBox Grid.Row="0" Content="Canny" Click="Check_canny" />
+                <CheckBox Grid.Row="1" Content="CellShading" Click="Check_cellShading" />
             </Grid>
-                <Grid Grid.Column="1" Margin="20 0 0 0">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"></ColumnDefinition>
-                        <ColumnDefinition Width="*"></ColumnDefinition>
-                        <ColumnDefinition Width="Auto"></ColumnDefinition>
-                        <ColumnDefinition Width="*"></ColumnDefinition>
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition></RowDefinition>
-                        <RowDefinition></RowDefinition>
-                    </Grid.RowDefinitions>
-                    <TextBlock Text="t1" TextAlignment="Right"/>
-                    <Slider Grid.Row="0" Grid.Column="1" x:Name="Slider_t1" Value="100" Minimum="0" Maximum="255" Margin=" 5 0 5 0"/>
-                    <TextBlock Grid.Column="2" Text="t2" TextAlignment="Right"/>
-                    <Slider Grid.Row="0" Grid.Column="3" x:Name="Slider_t2"  Value="200" Minimum="0" Maximum="255" Margin=" 5 0 5 0"/>
-                    <TextBlock Grid.Row="1" Text="v" TextAlignment="Right"/>
-                    <Slider Grid.Row="1" Grid.Column="1" x:Name="Slider_v" Value="255" Minimum="0" Maximum="255" Margin=" 5 0 5 0"/>
-                    <TextBlock Grid.Row="1" Grid.Column="2" Text="t" TextAlignment="Right"/>
-                    <Slider Grid.Row="1" Grid.Column="3"  x:Name="Slider_t" Value="100" Minimum="0" Maximum="255" Margin=" 5 0 5 0"/>
-                </Grid>
-  
-            <Button Grid.Row="1" Grid.Column="0"  Content="🖼" Click="AddFilter_Click" Margin="10 0 0 0"/>
-            <Button Grid.Row="1"  Grid.Column="1"  Content="🎥" Click="Camera_Click" Margin="10 0 0 0"/>
+            <Grid Grid.Column="1" Margin="20 0 0 0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                </Grid.RowDefinitions>
+                <TextBlock Text="t1" TextAlignment="Right" />
+                <Slider Grid.Row="0" Grid.Column="1" x:Name="Slider_t1" Value="100" Minimum="0" Maximum="255"
+                        ValueChanged="Slider_t1_OnValueChanged" Margin=" 5 0 5 0" />
+                <TextBlock Grid.Column="2" Text="t2" TextAlignment="Right" />
+                <Slider Grid.Row="0" Grid.Column="3" x:Name="Slider_t2" Value="200" Minimum="0" Maximum="255"
+                        ValueChanged="Slider_t2_OnValueChanged" Margin=" 5 0 5 0" />
+                <TextBlock Grid.Row="1" Text="v" TextAlignment="Right" />
+                <Slider Grid.Row="1" Grid.Column="1" x:Name="Slider_v" Value="255"
+                        ValueChanged="Slider_v_OnValueChanged" Minimum="0" Maximum="255"
+                        Margin=" 5 0 5 0" />
+                <TextBlock Grid.Row="1" Grid.Column="2" Text="t" TextAlignment="Right" />
+                <Slider Grid.Row="1" Grid.Column="3" x:Name="Slider_t" Value="100"
+                        ValueChanged="Slider_t_OnValueChanged" Minimum="0" Maximum="255"
+                        Margin=" 5 0 5 0" />
+            </Grid>
+            <Button Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Content="🖼" Click="AddFilter_Click" Margin="0 0 0 0" />
         </Grid>
-        <Image Grid.Row="2" Grid.Column="1" x:Name="Image_result" Source="Data/placeholder.png" MouseLeftButtonDown="SaveImage"/>
-        <Grid Grid.Row="3" Grid.ColumnSpan="3" Background="Black">
-            <TextBlock x:Name="Block" VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="JetBrains Mono" FontSize="18px" Text="Made by ezzha and lstaff"  Foreground="Azure"/>
+        <Image Grid.Row="3" Grid.Column="1" x:Name="Image_result" Source="Data/placeholder.png"
+               MouseLeftButtonDown="SaveImage" />
+        <Grid Grid.Row="4" Grid.ColumnSpan="3" Background="Black">
+            <TextBlock x:Name="Block" VerticalAlignment="Center" HorizontalAlignment="Center"
+                       FontFamily="JetBrains Mono" FontSize="18px" Text="Made by ezzha and lstaff" Foreground="Azure" />
         </Grid>
     </Grid>
 </Window>
