@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace OpenCV_app
+namespace OpenCV1_lern
 {
     /// <summary>
     /// Interaction logic for App.xaml

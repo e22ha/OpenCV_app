@@ -1,7 +1,7 @@
-﻿<Application x:Class="OpenCV_app.App"
+﻿<Application x:Class="OpenCV1_lern.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:OpenCV_app"
+             xmlns:local="clr-namespace:OpenCV1_lern"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
          

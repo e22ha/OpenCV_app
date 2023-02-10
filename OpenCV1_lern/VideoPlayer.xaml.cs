@@ -11,7 +11,7 @@ using Emgu.CV;
 using Emgu.CV.CvEnum;
 using Emgu.CV.Cuda;
 
-namespace OpenCV_app;
+namespace OpenCV1_lern;
 
 public partial class VideoPlayer : Window
 {

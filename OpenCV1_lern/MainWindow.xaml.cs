@@ -8,7 +8,7 @@ using Emgu.CV.CvEnum;
 using Microsoft.Win32;
 
 
-namespace OpenCV_app;
+namespace OpenCV1_lern;
 
 /// <summary>
 /// Interaction logic for MainWindow.xaml

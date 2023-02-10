@@ -4,7 +4,7 @@ using System.Windows;
 using Emgu.CV;
 using Emgu.CV.CvEnum;
 
-namespace OpenCV_app;
+namespace OpenCV1_lern;
 
 public partial class CameraView : Window
 {

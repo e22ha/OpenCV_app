@@ -5,7 +5,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Emgu.CV;
 
-namespace OpenCV_app;
+namespace OpenCV1_lern;
 
 public class Filter
 {
