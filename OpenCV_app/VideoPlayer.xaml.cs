@@ -9,6 +9,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using Emgu.CV;
 using Emgu.CV.CvEnum;
+using Emgu.CV.Cuda;
 
 namespace OpenCV_app;
 
@@ -54,22 +55,23 @@ public partial class VideoPlayer : Window
         {
             Mat frame = new Mat();
             videoCapture.Read(frame);
-
+    
             if (frame.IsEmpty)
                 break;
-
+    
             var canny = new Mat();
             var thresholdFilter = new Mat();
             var result = new Mat();
-
             CvInvoke.Threshold(frame, thresholdFilter, Filter.t, Filter.v, ThresholdType.Binary);
             CvInvoke.Canny(frame, canny, Filter.t1, Filter.t2, 3);
             CvInvoke.CvtColor(canny, canny, ColorConversion.Gray2Bgr);
             CvInvoke.Subtract(thresholdFilter, canny, result);
-
+    
             Image.Dispatcher.Invoke(() => { Image.Source = Filter.BitmapSourceFromHBitmap(result); });
         }
     }
+    
+    
 
 
     private void PlayButton_Click(object sender, RoutedEventArgs e)
