@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Automation;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
@@ -25,6 +26,16 @@ namespace OpenCV2_photoapp
         public MainWindow()
         {
             InitializeComponent();
+        }
+
+
+        private void FilterClick(object sender, RoutedEventArgs e)
+        {
+            filterParam.Visibility = (bool)firstFilter.IsChecked switch
+            {
+                true => Visibility.Visible,
+                false => Visibility.Collapsed
+            };
         }
     }
 }
