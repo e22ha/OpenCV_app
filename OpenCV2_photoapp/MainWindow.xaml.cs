@@ -16,6 +16,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Emgu.CV;
 using Emgu.CV.CvEnum;
+using Microsoft.Win32;
 
 namespace OpenCV2_photoapp;
 
@@ -28,5 +29,19 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
     }
-        
+
+    private void Click_image(object sender, MouseButtonEventArgs e)
+    {
+        Load_image();
+    }
+
+    private void Load_image()
+    {
+        var openFileDialog = new OpenFileDialog
+        {
+            Filter = "Image files (*.png;*.jpeg;*.jpg)|*.png;*.jpeg;*.jpg"
+        };
+        if (openFileDialog.ShowDialog() != true) return;
+        Image.Source = new BitmapImage(new Uri(openFileDialog.FileName));
+    }
 }

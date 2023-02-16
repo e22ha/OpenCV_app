@@ -52,7 +52,7 @@ public partial class FilterControl : UserControl
         var element = FindElementByName(GetParentOfType<Window>(this), TargetElementName);
         if (element == null) return;
 
-        var fromSeconds = TimeSpan.FromSeconds(0.5);
+        var fromSeconds = TimeSpan.FromSeconds(0.25);
         var calcHeight = 25*Convert.ToInt32(CountRow);
         var HideGrid = new DoubleAnimation
         {
