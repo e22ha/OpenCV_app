@@ -47,6 +47,7 @@
                                                             </BeginStoryboard>
                                                         </DataTrigger.ExitActions>
                                                     </DataTrigger>
+                                                    
                                                 </Style.Triggers>
                                             </Style>
                                         </Rectangle.Style>
@@ -111,18 +112,14 @@
                                 <Trigger Property="IsChecked" Value="{x:Null}">
                                     <Setter Property="Fill" TargetName="line" Value="#121212" />
                                 </Trigger>
+
+
                             </ControlTemplate.Triggers>
-                            
+
                         </ControlTemplate>
                     </Setter.Value>
                 </Setter>
             </Style>
-            <Storyboard x:Key="ShowPanel">
-                <DoubleAnimation Storyboard.TargetName="ParametersPanel" Storyboard.TargetProperty="(FrameworkElement.Height)" From="0" To="150" Duration="0:0:0.3"/>
-            </Storyboard>
-            <Storyboard x:Key="HidePanel">
-                <DoubleAnimation Storyboard.TargetName="ParametersPanel" Storyboard.TargetProperty="(FrameworkElement.Height)" From="Auto" To="0" Duration="0:0:0.3"/>
-            </Storyboard>
         </Grid.Resources>
         <Grid.RowDefinitions>
             <RowDefinition></RowDefinition>
@@ -134,45 +131,8 @@
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
-            <TextBlock Grid.Column="0" Text="{Binding Title}"  Foreground="Azure" />
-            <CheckBox x:Name="Switch" Grid.Column="2" HorizontalAlignment="Center" />
-        </Grid>
-        <Grid Grid.Row="1" x:Name="listParam" HorizontalAlignment="Stretch" Margin=" 0 0 " Height="0">
-            <Grid.Style>
-                <Style TargetType="{x:Type Grid}">
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding ElementName=Switch, Path=IsChecked}" Value="True">
-                            <DataTrigger.EnterActions>
-                                <BeginStoryboard>
-                                    <Storyboard>
-                                        <DoubleAnimation 
-                                            To="100" 
-                                            Duration="0:0:0.4" 
-                                            Storyboard.TargetProperty="Height"/>
-                                    </Storyboard>
-                                </BeginStoryboard>
-                            </DataTrigger.EnterActions>
-                            <DataTrigger.ExitActions>
-                                <BeginStoryboard>
-                                    <Storyboard>
-                                        <DoubleAnimation To="0" Duration="0:0:0.4" 
-                                                         Storyboard.TargetProperty="Height" />
-                                    </Storyboard>
-                                </BeginStoryboard>
-                            </DataTrigger.ExitActions>
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </Grid.Style>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*"></RowDefinition>
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="0.2*"></ColumnDefinition>
-                <ColumnDefinition Width="0.8*"></ColumnDefinition>
-            </Grid.ColumnDefinitions>
-            <TextBlock Grid.Column="0" Grid.Row="0" Text="name_P" Foreground="Azure"/>
-            <Slider Grid.Column="1" Grid.Row="0"/>
+            <TextBlock Grid.Column="0" Text="{Binding Title}" Foreground="Azure" />
+            <CheckBox  Grid.Column="2" HorizontalAlignment="Center" Checked="Switch_On" Unchecked="Switch_Off"/>
         </Grid>
     </Grid>
 </UserControl>
