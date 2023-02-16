@@ -29,13 +29,13 @@ namespace OpenCV2_photoapp
         }
 
 
-        private void FilterClick(object sender, RoutedEventArgs e)
-        {
-            filterParam.Visibility = (bool)firstFilter.IsChecked switch
-            {
-                true => Visibility.Visible,
-                false => Visibility.Collapsed
-            };
-        }
+        // private void FilterClick(object sender, RoutedEventArgs e)
+        // {
+        //     filterParam.Visibility = (bool)firstFilter.IsChecked switch
+        //     {
+        //         true => Visibility.Visible,
+        //         false => Visibility.Collapsed
+        //     };
+        // }
     }
 }

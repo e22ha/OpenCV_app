@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:openCv2Photoapp="clr-namespace:OpenCV2_photoapp"
         mc:Ignorable="d"
         Title="Filter" Height="450" Width="800">
     <Grid Background="#161616">
@@ -34,115 +35,6 @@
                 <Setter Property="Background" Value="Transparent" />
                 <Setter Property="Foreground" Value="Azure"></Setter>
             </Style>
-            <Style TargetType="{x:Type CheckBox}">
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="{x:Type CheckBox}">
-                            <Grid Background="Transparent" SnapsToDevicePixels="True"
-                                  Height="18">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="36" />
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
-                                <Grid x:Name="markGrid">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto" />
-                                        <ColumnDefinition Width="*" />
-                                    </Grid.ColumnDefinitions>
-                                    <Rectangle Fill="Transparent" Height="12" x:Name="moveEllipse">
-                                        <Rectangle.Style>
-                                            <Style TargetType="Rectangle">
-                                                <Style.Triggers>
-                                                    <DataTrigger
-                                                        Binding="{Binding IsChecked, RelativeSource={RelativeSource TemplatedParent}}"
-                                                        Value="True">
-                                                        <DataTrigger.EnterActions>
-                                                            <BeginStoryboard>
-                                                                <Storyboard>
-                                                                    <DoubleAnimation From="0" To="16"
-                                                                        Duration="0:0:0.4"
-                                                                        Storyboard.TargetProperty="Width" />
-                                                                </Storyboard>
-                                                            </BeginStoryboard>
-                                                        </DataTrigger.EnterActions>
-                                                        <DataTrigger.ExitActions>
-                                                            <BeginStoryboard>
-                                                                <Storyboard>
-                                                                    <DoubleAnimation To="0" Duration="0:0:0.4"
-                                                                        Storyboard.TargetProperty="Width" />
-                                                                </Storyboard>
-                                                            </BeginStoryboard>
-                                                        </DataTrigger.ExitActions>
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </Rectangle.Style>
-                                    </Rectangle>
-                                    <Rectangle RadiusX="9" RadiusY="9"
-                                               Grid.ColumnSpan="2"
-                                               StrokeThickness="1"
-                                               Name="line"
-                                               IsHitTestVisible="False">
-                                        <Rectangle.Style>
-                                            <Style TargetType="{x:Type Rectangle}">
-                                                <Setter Property="Fill" Value="#121212" />
-                                                <Setter Property="Stroke" Value="Azure"></Setter>
-                                            </Style>
-                                        </Rectangle.Style>
-                                    </Rectangle>
-                                    <Ellipse Width="{Binding ActualHeight, RelativeSource={RelativeSource Self}}"
-                                             StrokeThickness="1"
-                                             Name="spot"
-                                             Grid.Column="1"
-                                             Margin="3"
-                                             HorizontalAlignment="Left">
-                                        <Ellipse.Style>
-                                            <Style TargetType="Ellipse">
-                                                <Setter Property="Fill" Value="#121212" />
-                                                <Setter Property="Stroke" Value="Azure"></Setter>
-                                            </Style>
-                                        </Ellipse.Style>
-                                    </Ellipse>
-
-                                </Grid>
-                                <ContentPresenter x:Name="contentPresenter"
-                                                  ContentTemplate="{TemplateBinding ContentTemplate}"
-                                                  Content="{TemplateBinding Content}" Grid.Column="1"
-                                                  ContentStringFormat="{TemplateBinding ContentStringFormat}"
-                                                  Focusable="False"
-                                                  HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                                  Margin="{TemplateBinding Padding}" RecognizesAccessKey="True"
-                                                  SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
-                                                  VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
-                            </Grid>
-                            <ControlTemplate.Triggers>
-                                <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="Stroke" TargetName="line" Value="Azure" />
-                                    <Setter Property="Stroke" TargetName="spot" Value="Azure" />
-                                    <Setter Property="Fill" TargetName="spot" Value="Azure" />
-                                </Trigger>
-                                <Trigger Property="IsEnabled" Value="False">
-                                    <Setter Property="Opacity" Value=".5" />
-                                    <Setter Property="Stroke" TargetName="line" Value="Azure" />
-                                    <Setter Property="Stroke" TargetName="spot" Value="Azure" />
-                                </Trigger>
-                                <Trigger Property="IsPressed" Value="True">
-                                    <Setter Property="Stroke" TargetName="line" Value="Azure" />
-                                    <Setter Property="Stroke" TargetName="spot" Value="Azure" />
-                                </Trigger>
-                                <Trigger Property="IsChecked" Value="True">
-                                    <Setter Property="Fill" TargetName="line" Value="#121212" />
-                                    <Setter Property="Fill" TargetName="spot" Value="Azure" />
-                                    <Setter Property="Stroke" TargetName="spot" Value="Azure" />
-                                </Trigger>
-                                <Trigger Property="IsChecked" Value="{x:Null}">
-                                    <Setter Property="Fill" TargetName="line" Value="#121212" />
-                                </Trigger>
-                            </ControlTemplate.Triggers>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-            </Style>
         </Grid.Resources>
 
         <Grid.ColumnDefinitions>
@@ -171,48 +63,26 @@
         </StackPanel>
         <Grid Grid.Column="1" Grid.Row="1" Margin="10">
             <StackPanel Orientation="Vertical">
-                <Grid HorizontalAlignment="Stretch">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Column="0" Text="FilterName" Foreground="Azure" />
-                    <CheckBox x:Name="firstFilter" Grid.Column="2" HorizontalAlignment="Center" Click="FilterClick"/>
-                </Grid>
-                <Grid x:Name="filterParam" HorizontalAlignment="Stretch" Margin=" 0 10 " Height="Auto" Visibility="Collapsed">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="*"></RowDefinition>
-                        <RowDefinition Height="*"></RowDefinition>
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="0.2*"></ColumnDefinition>
-                        <ColumnDefinition Width="0.8*"></ColumnDefinition>
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Column="0" Grid.Row="0" Text="Param" Foreground="Azure"/>
-                    <Slider Grid.Column="1" Grid.Row="0"></Slider>
-                </Grid>
-                <Grid HorizontalAlignment="Stretch">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Column="0" Text="FilterName" Foreground="Azure" />
-                    <CheckBox  Grid.Column="2" HorizontalAlignment="Center" Click="FilterClick"/>
-                </Grid>
-                <Grid  HorizontalAlignment="Stretch" Margin=" 0 10 " Height="Auto" Visibility="Collapsed">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="*"></RowDefinition>
-                        <RowDefinition Height="*"></RowDefinition>
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="0.2*"></ColumnDefinition>
-                        <ColumnDefinition Width="0.8*"></ColumnDefinition>
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Column="0" Grid.Row="0" Text="Param" Foreground="Azure"/>
-                    <Slider Grid.Column="1" Grid.Row="0"></Slider>
-                </Grid>
+                <!--Вывод значений одного из трёх цветовых каналов по выбору пользователя.
+                    Вывод чёрно-белой верспп изображенпя. 
+                    Вывод Sepia версии изображения.
+                    Вывод изображения с возможностью изменен11я его яркости и контраста. 
+                     Вывод результатов логических операций 
+                    «дополнение», 
+                    «исключение» и «пересечение»,
+                    с возможностью выбора изображения для соответствующей операции. 
+                    Вывод изображения преобразованного в формат HSV, с возможностью изменения значений HSV. 
+                    Вывод изображений с применештем к ним медианного размытия. 
+                    Вывод изображений с применением к ним оконного фильтра,
+                    с возможностью  изменения матрицы фильтра из формы приложения. 
+                    Вывод изображений с применением к ним «акварельного фильтра»,
+                    а так же, возможностью выбора яркости,
+                    контраста и параметров смешивания изображений.
+                    Вывод изображений с применением к ним «cartoon filter» и 
+                    возможностью изменения порога преобразования изображения. -->
+                <openCv2Photoapp:FilterControl Title="qwe" Margin="0 10"/>
+                <openCv2Photoapp:FilterControl Title="qwe" Margin="0 10"/>
+                <openCv2Photoapp:FilterControl Title="qwe" Margin="0 10"/>
             </StackPanel>
         </Grid>
     </Grid>
