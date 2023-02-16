@@ -8,13 +8,13 @@
         Title="Filter" Height="450" Width="800">
     <Grid Background="#161616">
         <Grid.Resources>
-            <Style x:Key="MenuButtonStyle" TargetType="Button">
+            <Style x:Key="MenuButtonStyle" TargetType="MenuItem">
                 <Setter Property="Width" Value="Auto" />
                 <Setter Property="Height" Value="Auto" />
                 <Setter Property="Padding" Value="10 1" />
                 <Setter Property="Margin" Value="2 0" />
                 <Setter Property="BorderThickness" Value="0" />
-                <Setter Property="Background" Value="Transparent" />
+                <Setter Property="Background" Value="#161616" />
                 <Setter Property="Foreground" Value="Azure"></Setter>
             </Style>
             <Style x:Key="ButtonStyle" TargetType="Button">
@@ -50,15 +50,29 @@
             <RowDefinition Height="*"></RowDefinition>
             <RowDefinition Height="0.07*"></RowDefinition>
         </Grid.RowDefinitions>
-        <StackPanel Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Orientation="Horizontal"
-                    VerticalAlignment="Center">
-            <Button Content="File" Style="{StaticResource MenuButtonStyle}"></Button>
-            <Button Content="Edit" Style="{StaticResource MenuButtonStyle}"></Button>
-            <Button Content="About" Style="{StaticResource MenuButtonStyle}"></Button>
-        </StackPanel>
+        <Menu Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" VerticalAlignment="Center" Background="#161616">
+            <MenuItem Header="File" Style="{StaticResource MenuButtonStyle}">
+                <MenuItem Header="New" Style="{StaticResource MenuButtonStyle}" />
+                <MenuItem Header="Open" Style="{StaticResource MenuButtonStyle}" />
+                <MenuItem Header="Save" Style="{StaticResource MenuButtonStyle}" />
+                <Separator />
+                <MenuItem Header="Exit" Style="{StaticResource MenuButtonStyle}" />
+            </MenuItem>
+            <MenuItem Header="Edit" Style="{StaticResource MenuButtonStyle}">
+                <MenuItem Header="Undo" Style="{StaticResource MenuButtonStyle}" />
+                <MenuItem Header="Redo" Style="{StaticResource MenuButtonStyle}" />
+                <Separator />
+                <MenuItem Header="Cut" Style="{StaticResource MenuButtonStyle}" />
+                <MenuItem Header="Copy" Style="{StaticResource MenuButtonStyle}" />
+                <MenuItem Header="Paste" Style="{StaticResource MenuButtonStyle}" />
+            </MenuItem>
+            <MenuItem Header="About" Style="{StaticResource MenuButtonStyle}" />
+        </Menu>
+
         <Grid Grid.Column="0" Grid.Row="1" Margin="10" Background="#252525">
-            <Image Source="Resources/placeholder.png" Height="Auto" HorizontalAlignment="Center"
-                   VerticalAlignment="Center" />
+            <Image x:Name="Image" Source="Resources/placeholder.png" Height="Auto" HorizontalAlignment="Center"
+                   VerticalAlignment="Center"
+                   MouseLeftButtonDown="Click_image" />
         </Grid>
         <StackPanel Grid.Column="0" Grid.Row="2" Margin=" 10 0" Orientation="Horizontal" VerticalAlignment="Center"
                     HorizontalAlignment="Right">
@@ -71,7 +85,7 @@
                     Вывод чёрно-белой верспп изображенпя. 
                     Вывод Sepia версии изображения.
                     Вывод изображения с возможностью изменен11я его яркости и контраста. 
-                     Вывод результатов логических операций 
+                    Вывод результатов логических операций 
                     «дополнение», 
                     «исключение» и «пересечение»,
                     с возможностью выбора изображения для соответствующей операции. 
@@ -84,16 +98,41 @@
                     контраста и параметров смешивания изображений.
                     Вывод изображений с применением к ним «cartoon filter» и 
                     возможностью изменения порога преобразования изображения. -->
-                <openCv2Photoapp:FilterControl Title="Filter Name" Margin="0 10" TargetElementName="RGB_filter" CountRow="1">
+                <openCv2Photoapp:FilterControl Title="RGB Filter" Margin="0 10" TargetElementName="RGB_filter"
+                                               CountRow="1">
                 </openCv2Photoapp:FilterControl>
                 <Grid x:Name="RGB_filter" Height="0">
-                    <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom"> 
-                        <TextBlock Text="R"/>
-                        <CheckBox/>
-                        <TextBlock Text="G"/>
-                        <CheckBox/>
-                        <TextBlock Text="B"/>
-                        <CheckBox/>
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom">
+                        <TextBlock Text="R" />
+                        <CheckBox />
+                        <TextBlock Text="G" />
+                        <CheckBox />
+                        <TextBlock Text="B" />
+                        <CheckBox />
+                    </StackPanel>
+                </Grid>
+                <openCv2Photoapp:FilterControl Title="BW Filter" Margin="0 10" TargetElementName="BW_filter"
+                                               CountRow="0">
+                </openCv2Photoapp:FilterControl>
+                <openCv2Photoapp:FilterControl Title="Sepia Filter" Margin="0 10" TargetElementName="Sepia_filter"
+                                               CountRow="1">
+                </openCv2Photoapp:FilterControl>
+
+                <openCv2Photoapp:FilterControl Title="Яркость и контраст" Margin="0 10" TargetElementName="BC_filter"
+                                               CountRow="2">
+                </openCv2Photoapp:FilterControl>
+                <Grid x:Name="BC_filter" Height="0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <StackPanel Grid.Row="0" Orientation="Horizontal" VerticalAlignment="Bottom">
+                        <TextBlock Text="Brightness" />
+                        <Slider />
+                    </StackPanel>
+                    <StackPanel Grid.Row="1" Orientation="Horizontal" VerticalAlignment="Bottom">
+                        <TextBlock Text="Contrast" />
+                        <Slider />
                     </StackPanel>
                 </Grid>
             </StackPanel>
