@@ -13,8 +13,8 @@
                 <Setter Property="Foreground" Value="Azure"></Setter>
             </Style>
         </Grid.Resources>
-        <ListBox Name="ListBox" >
-            <ListBoxItem Content="Logger"></ListBoxItem>
+        <ListBox Name="ListBox" IsHitTestVisible="False">
+            <ListBoxItem Content="LOGGER" FontWeight="Bold" HorizontalContentAlignment="Center"></ListBoxItem>
         </ListBox>
     </Grid>
 </Window>
