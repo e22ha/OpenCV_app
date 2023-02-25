@@ -17,4 +17,8 @@
       <Resource Include="Resources\placeholder.png" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Remove="log4net.config" />
+    </ItemGroup>
+
 </Project>

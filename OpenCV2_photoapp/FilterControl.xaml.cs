@@ -8,10 +8,19 @@ namespace OpenCV2_photoapp;
 
 public partial class FilterControl : UserControl
 {
+    public delegate void SwitchChangedEventHandler(object sender, bool e);
+    public event SwitchChangedEventHandler SwitchChanged;
     public FilterControl()
     {
         InitializeComponent();
         DataContext = this;
+        Switch.Checked += Switch_Checked;
+         
+    }
+    
+    private void Switch_Checked(object sender, RoutedEventArgs e)
+    {
+        SwitchChanged?.Invoke(this, Switch.IsChecked ?? false);
     }
 
     private static UIElement FindElementByName(DependencyObject? parent, string name)
@@ -109,6 +118,7 @@ public partial class FilterControl : UserControl
     private void Switch_On(object sender, RoutedEventArgs e)
     {
         RunAnim(0);
+        
     }
 
     private void Switch_Off(object sender, RoutedEventArgs e)

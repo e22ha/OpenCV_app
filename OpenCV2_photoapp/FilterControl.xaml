@@ -132,7 +132,7 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
             <TextBlock Grid.Column="0" Text="{Binding Title}" Foreground="Azure" />
-            <CheckBox  Grid.Column="2" HorizontalAlignment="Center" Checked="Switch_On" Unchecked="Switch_Off"/>
+            <CheckBox x:Name="Switch" Grid.Column="2" HorizontalAlignment="Center" Checked="Switch_On" Unchecked="Switch_Off"/>
         </Grid>
     </Grid>
 </UserControl>
