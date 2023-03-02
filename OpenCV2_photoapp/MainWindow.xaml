@@ -76,10 +76,11 @@
         </Grid>
         <StackPanel Grid.Column="0" Grid.Row="2" Margin=" 10 0" Orientation="Horizontal" VerticalAlignment="Center"
                     HorizontalAlignment="Right">
-            <ToggleButton Name="ToggleFilter" Content="no_filter" Margin=" 0 0 10  0" Style="{StaticResource ToggleButtonStyle}" Click="nofliterClick" />
-            <Button Content="compare" Style="{StaticResource ButtonStyle}" Click="ButtonBase_OnClick"/>
+            <ToggleButton Name="ToggleFilter" Content="no_filter" Margin=" 0 0 10  0"
+                          Style="{StaticResource ToggleButtonStyle}" Click="nofliterClick" />
+            <Button Content="compare" Style="{StaticResource ButtonStyle}" Click="ButtonBase_OnClick" />
         </StackPanel>
-        <Grid Grid.Column="1" Grid.Row="1" Margin="10">
+        <Grid Name="Filter_panel" Grid.Column="1" Grid.Row="1" Margin="10" IsEnabled="False">
             <StackPanel Orientation="Vertical">
                 <!--Вывод значений одного из трёх цветовых каналов по выбору пользователя.
                     Вывод чёрно-белой верспп изображенпя. 
@@ -100,21 +101,26 @@
                     возможностью изменения порога преобразования изображения. -->
                 <openCv2Photoapp:FilterControl Title="RGB Filter" Margin="0 10" TargetElementName="RGB"
                                                CountRow="1"
-                                               SwitchChanged="RGB_filter"/>
+                                               SwitchChanged="RGB_filter" />
                 <Grid x:Name="RGB" Height="0">
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom">
                         <TextBlock Text="R" />
-                        <CheckBox Name="RCheckBox" Checked="CheckBox_OnChecked" Unchecked="CheckBox_OnChecked"/>
+                        <CheckBox Name="RCheckBox" Checked="RgbFilterCheckBox_OnChecked"
+                                  Unchecked="RgbFilterCheckBox_OnChecked" 
+                                  IsChecked="True"/>
                         <TextBlock Text="G" />
-                        <CheckBox Name="GCheckBox" Checked="CheckBox_OnChecked" Unchecked="CheckBox_OnChecked"/>
+                        <CheckBox Name="GCheckBox" Checked="RgbFilterCheckBox_OnChecked"
+                                  Unchecked="RgbFilterCheckBox_OnChecked"
+                                  IsChecked="True"/>
                         <TextBlock Text="B" />
-                        <CheckBox Name="BCheckBox" Checked="CheckBox_OnChecked" Unchecked="CheckBox_OnChecked"/>
+                        <CheckBox Name="BCheckBox" Checked="RgbFilterCheckBox_OnChecked"
+                                  Unchecked="RgbFilterCheckBox_OnChecked"
+                                  IsChecked="True"/>
                     </StackPanel>
                 </Grid>
                 <openCv2Photoapp:FilterControl Title="BW Filter" Margin="0 10" TargetElementName="BW"
                                                CountRow="0"
-                                               SwitchChanged="BW_filter"
-                                               />
+                                               SwitchChanged="BW_filter" />
                 <openCv2Photoapp:FilterControl Title="Sepia Filter" Margin="0 10" TargetElementName="Sepia"
                                                CountRow="1"
                                                SwitchChanged="Sepia_filter">

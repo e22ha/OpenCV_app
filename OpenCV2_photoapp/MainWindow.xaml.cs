@@ -47,76 +47,77 @@ public partial class MainWindow : Window
         Left = (screenWidth - Width) / 6*1;
         Top = (screenHeight - Height) / 2;
     }
-    
-    public void RGB_filter(object sender, bool e)
+
+    private void RGB_filter(object sender, bool e)
     {
-        l.Write("RGB_on");
-        if (originalMat == null) originalMat = CvInvoke.Imread(((BitmapImage)Image.Source).UriSource.LocalPath);
-        var img = originalMat;
-        var channels = new VectorOfMat();
-        CvInvoke.Split(img, channels);
-
-        var green = channels[0];
-        var blue = channels[0];
-        var red = channels[0];
-        
-        if ((bool)BCheckBox.IsChecked & (bool)GCheckBox.IsChecked & (bool)RCheckBox.IsChecked)
+        switch (e)
         {
-            CvInvoke.Merge(channels, img);
-            filteredMat = img;
+            case true:
+                ApplyRgbFilter();
+                break;
+            case false:
+                Image.Source = Filter.BitmapSourceFromHBitmap(originalMat);
+                break;
         }
-        else if ((bool)BCheckBox.IsChecked & (bool)GCheckBox.IsChecked )
-        {
-            var sum = new Mat();
-            CvInvoke.Add(channels[0], channels[1], sum);
-            CvInvoke.CvtColor(sum, sum, ColorConversion.Gray2Bgr);
-            filteredMat = sum;
-        }
-        else if ((bool)GCheckBox.IsChecked & (bool)RCheckBox.IsChecked )
-        {
-            var sum = new Mat();
-            CvInvoke.Add(channels[1], channels[2], sum);
-            CvInvoke.CvtColor(sum, sum, ColorConversion.Gray2Bgr);
-            filteredMat = sum;
-        }       
-        else if ((bool)RCheckBox.IsChecked & (bool)BCheckBox.IsChecked )
-        {
-            var sum = new Mat();
-            CvInvoke.Add(channels[2], channels[0], sum);
-            CvInvoke.CvtColor(sum, sum, ColorConversion.Gray2Bgr);
-            filteredMat = sum;
-        }
-        else if ((bool)BCheckBox.IsChecked)
-        {
-            CvInvoke.CvtColor(blue, blue, ColorConversion.Gray2Bgr);
-            filteredMat = blue;
-        }
-        else if ((bool)GCheckBox.IsChecked)
-        {
-            CvInvoke.CvtColor(green, green, ColorConversion.Gray2Bgr);
-            filteredMat = green;
-        }
-        else if ((bool)RCheckBox.IsChecked)
-        {
-            CvInvoke.CvtColor(red, red, ColorConversion.Gray2Bgr);
-            filteredMat = red;
-        }
-        else
-        {
-            filteredMat = img;
-        }
-
-
-        l.Write("RGB_apply");
-        Image.Source = Filter.BitmapSourceFromHBitmap(filteredMat);
     }
-    
-    public void BW_filter(object sender, bool e)
+
+    private void ApplyRgbFilter()
     {
-        l.Write("BW_on");
-        if (originalMat == null) originalMat = CvInvoke.Imread(((BitmapImage)Image.Source).UriSource.LocalPath);
+        if (originalMat == null)
+        {
+            l.Write("none");
+            return;
+        }
+        l.Write("RGB_on");
         var img = originalMat;
-        Image<Bgr, byte> image = img.Clone().ToImage<Bgr, byte>();;
+
+        var image = img.Clone().ToImage<Bgr, byte>();
+        
+        var SomeChImg = new Image<Bgr, byte>(img.Size);
+
+        var b = (bool)BCheckBox.IsChecked ? 1 : 0;
+        var g = (bool)GCheckBox.IsChecked ? 1 : 0;
+        var r = (bool)RCheckBox.IsChecked ? 1 : 0;
+
+        for (var y = 0; y < img.Size.Height; y++)
+        {
+            for (var x = 0; x < img.Size.Width; x++)
+            {
+                SomeChImg.Data[x, y, 0] = (byte)(image.Data[x, y, 0] * b);
+                SomeChImg.Data[x, y, 1] = (byte)(image.Data[x, y, 1] * g);
+                SomeChImg.Data[x, y, 2] = (byte)(image.Data[x, y, 2] * r);
+            }
+        }
+
+        filteredMat = SomeChImg.ToBitmap().ToMat();
+
+        Image.Source = Filter.BitmapSourceFromHBitmap(filteredMat);
+        l.Write("RGB_apply");
+    }
+
+    private void BW_filter(object sender, bool e)
+    {
+        switch (e)
+        {
+            case true:
+                ApplyBwFilter();
+                break;
+            case false:
+                Image.Source = Filter.BitmapSourceFromHBitmap(originalMat);
+                break;
+        }
+    }
+
+    private void ApplyBwFilter()
+    {
+        if (originalMat == null)
+        {
+            l.Write("none");
+            return;
+        }
+        l.Write("BW_on");
+        var img = originalMat;
+        var image = img.Clone().ToImage<Bgr, byte>();
         var grayImage = new Image<Gray, byte>(img.Size);
 
         for (var y = 0; y < img.Size.Height; y++)
@@ -127,27 +128,28 @@ public partial class MainWindow : Window
                                                  image.Data[x, y, 2] * 0.299);
             }
         }
-        
+
         filteredMat = grayImage.ToBitmap().ToMat();
-        
+
         Image.Source = Filter.BitmapSourceFromHBitmap(filteredMat);
     }
 
     private void Click_image(object sender, MouseButtonEventArgs e)
     {
-        Load_image();
+        Filter_panel.IsEnabled = Load_image();
     }
 
-    private void Load_image()
+    private bool Load_image()
     {
         var openFileDialog = new OpenFileDialog
         {
             Filter = "Image files (*.png;*.jpeg;*.jpg)|*.png;*.jpeg;*.jpg"
         };
-        if (openFileDialog.ShowDialog() != true) return;
+        if (openFileDialog.ShowDialog() != true) return false;
         Image.Source = new BitmapImage(new Uri(openFileDialog.FileName));
         originalMat = CvInvoke.Imread(((BitmapImage)Image.Source).UriSource.LocalPath);
         l.Write("img load "+ Path.GetFileNameWithoutExtension(openFileDialog.FileName));
+        return true;
     }
 
     private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
@@ -155,9 +157,9 @@ public partial class MainWindow : Window
         throw new NotImplementedException();
     }
 
-    private void CheckBox_OnChecked(object sender, RoutedEventArgs e)
+    private void RgbFilterCheckBox_OnChecked(object sender, RoutedEventArgs e)
     {
-        RGB_filter(sender, true);
+        ApplyRgbFilter();
     }
 
     private void Sepia_filter(object sender, bool e)

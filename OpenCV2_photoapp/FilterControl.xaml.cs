@@ -14,14 +14,16 @@ public partial class FilterControl : UserControl
     {
         InitializeComponent();
         DataContext = this;
-        Switch.Checked += Switch_Checked;
+        Switch.Checked += Switch_Ch;
+        Switch.Unchecked += Switch_Ch;
          
     }
     
-    private void Switch_Checked(object sender, RoutedEventArgs e)
+    private void Switch_Ch(object sender, RoutedEventArgs e)
     {
         SwitchChanged?.Invoke(this, Switch.IsChecked ?? false);
     }
+    
 
     private static UIElement FindElementByName(DependencyObject? parent, string name)
     {
