@@ -324,27 +324,28 @@ public partial class MainWindow : Window
         }
 
         l.Write("HSV_on");
-        var img = originalMat;
+        var img = originalMat.Clone();
 
-        var HSVImage = new Mat();
 
-        CvInvoke.CvtColor(img, HSVImage, ColorConversion.Bgr2Hsv);
+        CvInvoke.CvtColor(img, img, ColorConversion.Bgr2Hsv);
 
-        var hue = HueSlider.Slider.Value;
+        var hue = HueSlider.Slider.Value ;
         var saturation = SaturationSlider.Slider.Value;
         var value = ValueSlider.Slider.Value;
+
+        var image = img.Clone().ToImage<Hsv, byte>();
         
-        for (var y = 0; y < HSVImage.Height; y++)
+        for (var y = 0; y < image.Height; y++)
         {
-            for (var x = 0; x < HSVImage.Width; x++)
+            for (var x = 0; x < image.Width; x++)
             {
-                HSVImage.Col(x).Row(y).Split()[0] *= hue;
-                HSVImage.Col(x).Row(y).Split()[1] *= saturation;
-                HSVImage.Col(x).Row(y).Split()[2] *= value;
+                image.Data[x, y, 0] = (byte)hue;
+                image.Data[x, y, 1] = (byte)saturation;
+                image.Data[x, y, 0] += (byte)value;
             }
         }
 
-        filteredMat = HSVImage;
+        filteredMat = image.ToBitmap().ToMat();
 
         Image.Source = Filter.BitmapSourceFromHBitmap(filteredMat);
     }

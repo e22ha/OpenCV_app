@@ -151,7 +151,7 @@
                                                    Step="1" 
                                                    ValueChanged="HSVSlider_OnValueChanged"/>
                         <TextBlock Text="Value" />
-                        <openCv2Photoapp:SliderWTb x:Name="ValueSlider" SliderValue="0" Minimum="0" Maximum="255"
+                        <openCv2Photoapp:SliderWTb x:Name="ValueSlider" SliderValue="0" Minimum="-127" Maximum="128"
                                                    Step="1" 
                                                    ValueChanged="HSVSlider_OnValueChanged"/>
                     </StackPanel>
