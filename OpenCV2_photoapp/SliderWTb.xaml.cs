@@ -13,7 +13,7 @@ namespace OpenCV2_photoapp
         public static readonly DependencyProperty StepProperty = DependencyProperty.Register(nameof(Step), typeof(int), typeof(SliderWTb), new PropertyMetadata(1));
         
         public delegate void SliderChangedEventHandler(object sender, RoutedPropertyChangedEventArgs<double> routedPropertyChangedEventArgs);
-        public event SliderChangedEventHandler ValueChanged;
+        public event SliderChangedEventHandler ValueChanged = null!;
         
         
 

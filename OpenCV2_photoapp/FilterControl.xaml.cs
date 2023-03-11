@@ -9,7 +9,7 @@ namespace OpenCV2_photoapp;
 public partial class FilterControl : UserControl
 {
     public delegate void SwitchChangedEventHandler(object sender, bool e);
-    public event SwitchChangedEventHandler SwitchChanged;
+    public event SwitchChangedEventHandler SwitchChanged = null!;
     public FilterControl()
     {
         InitializeComponent();
@@ -109,7 +109,7 @@ public partial class FilterControl : UserControl
     }
 
 
-    public string Title { get; set; }
+    public string Title { get; set; } = null!;
 
     public string CountRow
     {
