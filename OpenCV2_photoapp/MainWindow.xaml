@@ -91,14 +91,6 @@
         </StackPanel>
         <Grid Name="Filter_panel" Grid.Column="1" Grid.Row="1" Margin="10" IsEnabled="False">
             <StackPanel Orientation="Vertical">
-                <!--
-                    Вывод изображений с применением к ним оконного фильтра,
-                    с возможностью  изменения матрицы фильтра из формы приложения. 
-                    Вывод изображений с применением к ним «акварельного фильтра»,
-                    а так же, возможностью выбора яркости,
-                    контраста и параметров смешивания изображений.
-                    Вывод изображений с применением к ним «cartoon filter» и 
-                    возможностью изменения порога преобразования изображения. -->
                 <openCv2Photoapp:FilterControl Title="RGB Filter" Margin="0 10" TargetElementName="RGB"
                                                CountRow="1"
                                                SwitchChanged="RGB_filter" />
@@ -160,12 +152,12 @@
                                                    ValueChanged="HSVSlider_OnValueChanged" />
                     </StackPanel>
                 </Grid>
-                <openCv2Photoapp:FilterControl Title="Blur filter" Margin="0 10" TargetElementName="Blur"
-                                               CountRow="1"
+                <openCv2Photoapp:FilterControl Title="MBlur filter" Margin="0 10" TargetElementName="Blur"
+                                               CountRow="0"
                                                SwitchChanged="Blur_filter_OnSwitchChanged" />
                 <Grid Name="Blur" Height="0">
-                    <openCv2Photoapp:SliderWTb x:Name="SliderCore" SliderValue="5" Minimum="1" Maximum="10" Step="1"
-                                               ValueChanged="SliderCore_OnValueChanged" />
+                    <!--<openCv2Photoapp:SliderWTb x:Name="SliderCore" SliderValue="5" Minimum="1" Maximum="10" Step="1"
+                                               ValueChanged="SliderCore_OnValueChanged" />-->
                 </Grid>
                 <openCv2Photoapp:FilterControl Title="Math filter" Margin="0 10" TargetElementName="Math"
                                                CountRow="4"
@@ -178,6 +170,17 @@
                         <RadioButton x:Name="IntersectRadioButton" GroupName="Math" Content="Intersect"
                                      Click="MathRadioButton_OnClick" Foreground="Azure"/>
                         <Button Content="load" Style="{StaticResource ButtonLoadStyle}" Click="LoadImageForMath_OnClick" Width="100" HorizontalAlignment="Left"/>
+                </StackPanel>
+                <openCv2Photoapp:FilterControl Title="Win filter" Margin="0 10" TargetElementName="Win"
+                                               CountRow="3"
+                                               SwitchChanged="Win_filter_OnSwitchChanged" />
+                <StackPanel Name="Win" Height="0">
+                    <RadioButton x:Name="EdgeRadioButton" GroupName="Math" Content="Edge"
+                                 Click="WinRadioButton_OnClick" Foreground="Azure" IsChecked="True"/>
+                    <RadioButton x:Name="SharpenRadioButton" GroupName="Math" Content="Sharpen"
+                                 Click="WinRadioButton_OnClick" Foreground="Azure"/>
+                    <RadioButton x:Name="EmbosRadioButton" GroupName="Math" Content="Embos"
+                                 Click="WinRadioButton_OnClick" Foreground="Azure"/>
                 </StackPanel>
             </StackPanel>
         </Grid>

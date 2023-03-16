@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media;
@@ -202,5 +203,66 @@ public class Filter
         Win,
         Aqua,
         Caartoon
+    }
+
+
+    public static Image<Bgr, byte> Blur(Mat img)
+    {
+        var blur = img.Clone().ToBitmap().ToImage<Bgr, byte>();
+
+        var outputImage = blur.CopyBlank();
+
+        var list = new List<byte>();
+
+        const int sh = 6;
+        const int N = 13;
+
+        for (var c = 0; c < 3; c++)
+        for (var y = sh; y < blur.Size.Height - sh; y++)
+        for (var x = sh; x < blur.Size.Width - sh; x++)
+        {
+            list.Clear();
+
+            for (var i = -1; i < 2; i++)
+            for (var j = -1; j < 2; j++)
+            {
+                list.Add(blur.Data[i + y, j + x, c]);
+            }
+
+            list.Sort();
+
+            outputImage.Data[y, x, c] = list[N / 2];
+        }
+
+        return outputImage;
+    }
+
+    public static Image<Gray, byte> WinFilter(Image<Gray, byte> clone, int winTypeOp)
+    {
+        var gray = clone.Convert<Gray, byte>();
+        var result = gray.CopyBlank();
+        
+        var window = winTypeOp switch
+        {
+            1 => new int[3, 3] { { -1, -1, -1 }, { -1, 9, -1 }, { -1, -1, -1 } },
+            2 => new int[3, 3] { { -4, -2, 0 }, { -2, 1, 2 }, { 0, 2, 4 } },
+            3 => new int[3, 3] { { 0, 0, 0 }, { -4, 4, 0 }, { 0, 0, 0 } },
+        };
+
+        for (var y = 1; y < gray.Size.Height - 1; y++)
+        for (var x = 1; x < gray.Size.Width - 1; x++)
+        {
+            var r = 0;
+
+            for (var i = -1; i < 2; i++)
+            for (var j = -1; j < 2; j++)
+            {
+                r += gray.Data[i + y, j + x, 0] * window[i + 1, j + 1];
+            }
+            
+            result.Data[y, x, 0] = between0255(r);
+        }
+
+        return result;
     }
 }

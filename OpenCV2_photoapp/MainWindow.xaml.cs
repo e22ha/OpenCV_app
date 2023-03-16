@@ -27,6 +27,7 @@ public partial class MainWindow : Window
     private Mat filteredMat = null;
     private Mat mathMaskImage = null;
     private int _mathTypeOp;
+    private int _winTypeOp = 1;
 
     public MainWindow()
     {
@@ -170,11 +171,11 @@ public partial class MainWindow : Window
     private void ApplyBCFilter()
     {
         if (originalMat == null) return;
-        
+
         var image = originalMat.Clone().ToImage<Bgr, byte>();
-        
+
         //TODO: set right value range 
-        var contrastValue = ContrastSlider.Slider.Value / 100; 
+        var contrastValue = ContrastSlider.Slider.Value / 100;
         var brightnessValue = BrightnessSlider.Slider.Value / 100 * 255;
 
         filteredMat = Filter.ContrastBrightness(image, contrastValue, brightnessValue).ToBitmap().ToMat();
@@ -238,12 +239,12 @@ public partial class MainWindow : Window
         var hue = HueSlider.Slider.Value;
         var saturation = SaturationSlider.Slider.Value;
         var value = ValueSlider.Slider.Value;
-        
+
         filteredMat = Filter.HcvImage(img, hue, saturation, value).ToBitmap().ToMat();
 
         Image.Source = Filter.BitmapSourceFromHBitmap(filteredMat);
     }
-    
+
 
     private void HSVSlider_OnValueChanged(object sender,
         RoutedPropertyChangedEventArgs<double> routedpropertychangedeventargs)
@@ -268,14 +269,11 @@ public partial class MainWindow : Window
     {
         if (originalMat == null) return;
 
-        var outputImage = new Mat();
+        var img = originalMat.Clone();
 
-        var coreSize = (int)SliderCore.Slider.Value;
-        
-        filteredMat = outputImage;
+        filteredMat = Filter.Blur(img).ToBitmap().ToMat();
 
         Image.Source = Filter.BitmapSourceFromHBitmap(filteredMat);
-        l.Write("Blur_apply");
     }
 
     private void SliderCore_OnValueChanged(object sender,
@@ -314,7 +312,7 @@ public partial class MainWindow : Window
     private void ApplyMathFilter()
     {
         if (originalMat == null || mathMaskImage == null) return;
-        
+
         var img = originalMat.Clone().ToImage<Bgr, byte>();
 
         switch (_mathTypeOp)
@@ -333,5 +331,46 @@ public partial class MainWindow : Window
         filteredMat = img.ToBitmap().ToMat();
 
         Image.Source = Filter.BitmapSourceFromHBitmap(filteredMat);
+    }
+
+    private void ApplyWinFilter()
+    {
+        if (originalMat == null) return;
+
+        var img = originalMat.Clone().ToImage<Gray, byte>();
+
+
+        img = Filter.WinFilter(img.Clone(), _winTypeOp);
+
+
+        filteredMat = img.ToBitmap().ToMat();
+
+        Image.Source = Filter.BitmapSourceFromHBitmap(filteredMat);
+    }
+
+    private void Win_filter_OnSwitchChanged(object sender, bool e)
+    {
+        switch (e)
+        {
+            case true:
+                ApplyWinFilter();
+                break;
+            case false:
+                Image.Source = Filter.BitmapSourceFromHBitmap(originalMat);
+                break;
+        }
+    }
+
+    private void WinRadioButton_OnClick(object sender, RoutedEventArgs e)
+    {
+        var rb = (RadioButton)sender;
+        _winTypeOp = rb.Name switch
+        {
+            "EdgeRadioButton" => 1,
+            "SharpenRadioButton" => 2,
+            "EmbosRadioButton" => 3,
+            _ => _winTypeOp
+        };
+        ApplyWinFilter();
     }
 }
