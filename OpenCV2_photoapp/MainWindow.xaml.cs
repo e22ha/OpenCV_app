@@ -10,7 +10,6 @@ using Emgu.CV.CvEnum;
 using Emgu.CV.Structure;
 using Emgu.CV.Util;
 using Microsoft.Win32;
-using System.Linq;
 using System.Windows.Controls;
 using Point = System.Drawing.Point;
 using Size = System.Drawing.Size;
@@ -24,7 +23,7 @@ namespace OpenCV2_photoapp;
 public partial class MainWindow : Window
 {
     private logWin l;
-    private Mat originalMat = null;
+    private Mat originalMat;
     private Mat filteredMat = null;
     private Mat mathMaskImage = null;
     private int _mathTypeOp;
@@ -32,8 +31,6 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         l = new logWin();
-        l.Show();
-        l.Write("showLog");
 
         InitializeComponent();
         Loaded += Window_Loaded;
@@ -68,38 +65,19 @@ public partial class MainWindow : Window
 
     private void ApplyRgbFilter()
     {
-        if (originalMat == null)
-        {
-            l.Write("none");
-            return;
-        }
+        if (originalMat == null) return;
 
-        l.Write("RGB_on");
-        var img = originalMat;
-
-        var image = img.Clone().ToImage<Bgr, byte>();
-
-        var SomeChImg = new Image<Bgr, byte>(img.Size);
+        var image = originalMat.Clone().ToImage<Bgr, byte>();
 
         var b = (bool)BCheckBox.IsChecked ? 1 : 0;
         var g = (bool)GCheckBox.IsChecked ? 1 : 0;
         var r = (bool)RCheckBox.IsChecked ? 1 : 0;
 
-        for (var y = 0; y < img.Size.Height; y++)
-        {
-            for (var x = 0; x < img.Size.Width; x++)
-            {
-                SomeChImg.Data[x, y, 0] = (byte)(image.Data[x, y, 0] * b);
-                SomeChImg.Data[x, y, 1] = (byte)(image.Data[x, y, 1] * g);
-                SomeChImg.Data[x, y, 2] = (byte)(image.Data[x, y, 2] * r);
-            }
-        }
-
-        filteredMat = SomeChImg.ToBitmap().ToMat();
+        filteredMat = Filter.RGBChSwitch(image, b, g, r).ToBitmap().ToMat();
 
         Image.Source = Filter.BitmapSourceFromHBitmap(filteredMat);
-        l.Write("RGB_apply");
     }
+
 
     private void BW_filter(object sender, bool e)
     {
@@ -116,31 +94,17 @@ public partial class MainWindow : Window
 
     private void ApplyBwFilter()
     {
-        if (originalMat == null)
-        {
-            l.Write("none");
-            return;
-        }
+        if (originalMat == null) return;
 
-        l.Write("BW_on");
-        var img = originalMat;
-        var image = img.Clone().ToImage<Bgr, byte>();
-        var grayImage = new Image<Gray, byte>(img.Size);
+        var image = originalMat.Clone().ToImage<Bgr, byte>();
 
-        for (var y = 0; y < img.Size.Height; y++)
-        {
-            for (var x = 0; x < img.Size.Width; x++)
-            {
-                grayImage.Data[x, y, 0] = (byte)(image.Data[x, y, 0] * 0.114 + image.Data[x, y, 1] * 0.587 +
-                                                 image.Data[x, y, 2] * 0.299);
-            }
-        }
-
-        filteredMat = grayImage.ToBitmap().ToMat();
+        filteredMat = Filter.BWImage(image).ToBitmap().ToMat();
 
         Image.Source = Filter.BitmapSourceFromHBitmap(filteredMat);
     }
 
+
+//method for call load method with return result into state of enabled filter panel 
     private void Click_image(object sender, MouseButtonEventArgs e)
     {
         Filter_panel.IsEnabled = Load_image();
@@ -155,7 +119,6 @@ public partial class MainWindow : Window
         if (openFileDialog.ShowDialog() != true) return false;
         Image.Source = new BitmapImage(new Uri(openFileDialog.FileName));
         originalMat = CvInvoke.Imread(((BitmapImage)Image.Source).UriSource.LocalPath);
-        l.Write("img load " + Path.GetFileNameWithoutExtension(openFileDialog.FileName));
         return true;
     }
 
@@ -166,8 +129,8 @@ public partial class MainWindow : Window
             Filter = "Image files (*.png;*.jpeg;*.jpg)|*.png;*.jpeg;*.jpg"
         };
         if (openFileDialog.ShowDialog() != true) return;
-        mathMaskImage = CvInvoke.Imread(openFileDialog.FileName, ImreadModes.Color);
-        l.Write("mask load " + Path.GetFileNameWithoutExtension(openFileDialog.FileName));
+        mathMaskImage = CvInvoke.Imread(openFileDialog.FileName);
+        ApplyMathFilter();
     }
 
     private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
@@ -195,93 +158,30 @@ public partial class MainWindow : Window
 
     private void ApplySepiaFilter()
     {
-        if (originalMat == null)
-        {
-            l.Write("ApplySepiaFilter: none");
-            return;
-        }
+        if (originalMat == null) return;
 
-        l.Write("Sepia_on");
-        var img = originalMat;
-        var image = img.Clone().ToImage<Bgr, byte>();
-        ;
-        var SepiaImg = new Image<Bgr, byte>(img.Size);
+        var image = originalMat.Clone().ToImage<Bgr, byte>();
 
-        for (var y = 0; y < img.Size.Height; y++)
-        {
-            for (var x = 0; x < img.Size.Width; x++)
-            {
-                SepiaImg.Data[x, y, 0] = between0255((byte)(image.Data[x, y, 0] * 0.393));
-                SepiaImg.Data[x, y, 1] = between0255((byte)(image.Data[x, y, 1] * 0.686));
-                SepiaImg.Data[x, y, 2] = between0255((byte)(image.Data[x, y, 2] * 0.131));
-            }
-        }
-
-        filteredMat = SepiaImg.ToBitmap().ToMat();
+        filteredMat = Filter.Sepia(image).ToBitmap().ToMat();
 
         Image.Source = Filter.BitmapSourceFromHBitmap(filteredMat);
     }
 
     private void ApplyBCFilter()
     {
-        if (originalMat == null)
-        {
-            l.Write("none");
-            return;
-        }
-
-        l.Write("BC_on");
-        var img = originalMat.Clone();
-        var image = img.Clone().ToImage<Bgr, byte>();
-
+        if (originalMat == null) return;
         
-        // Задаем значение контраста и яркости
-        double contrastValue = ContrastSlider.Slider.Value/100; // значение контраста от 0 до 1
-        l.Write(contrastValue.ToString());
-        double brightnessValue = BrightnessSlider.Slider.Value/100 *255; // значение яркости от -1 до 1
-        l.Write(brightnessValue.ToString());
-
-        // Создаем новое изображение того же размера, что и исходное изображение
-        Image<Bgr, byte> outputImg = new Image<Bgr, byte>(image.Size);
-
-        // Проходим по каждому пикселю исходного изображения
-        for (int y = 0; y < image.Rows; y++)
-        {
-            for (int x = 0; x < image.Cols; x++)
-            {
-                // Получаем значения цветовых каналов для текущего пикселя
-                byte b = image.Data[y, x, 0];
-                byte g = image.Data[y, x, 1];
-                byte r = image.Data[y, x, 2];
-
-
-                double Red = r / 255.0f;
-                double Green = g / 255.0f;
-                double Blue = b / 255.0f;
-                r = (byte)((((Red - 0.5f) * contrastValue) + 0.5f) * 255.0f);
-                g = (byte)((((Green - 0.5f) * contrastValue) + 0.5f) * 255.0f);
-                b = (byte)((((Blue - 0.5f) * contrastValue) + 0.5f) * 255.0f);
-
-                r = between0255((byte)(r + brightnessValue));
-                g = between0255((byte)(g + brightnessValue));
-                b = between0255((byte)(b + brightnessValue));
-
-
-                outputImg.Data[y, x, 0] = between0255(b);
-                outputImg.Data[y, x, 1] = between0255(g);
-                outputImg.Data[y, x, 2] = between0255(r);
-            }
-        }
+        var image = originalMat.Clone().ToImage<Bgr, byte>();
         
-        filteredMat = outputImg.ToBitmap().ToMat();
+        //TODO: set right value range 
+        var contrastValue = ContrastSlider.Slider.Value / 100; 
+        var brightnessValue = BrightnessSlider.Slider.Value / 100 * 255;
+
+        filteredMat = Filter.ContrastBrightness(image, contrastValue, brightnessValue).ToBitmap().ToMat();
 
         Image.Source = Filter.BitmapSourceFromHBitmap(filteredMat);
     }
 
-    private static byte between0255(byte b)
-    {
-        return byte.Min(byte.Max(b, 0), 255);
-    }
 
     private void nofliterClick(object sender, RoutedEventArgs e)
     {
@@ -331,38 +231,19 @@ public partial class MainWindow : Window
 
     private void ApplyHSVFilter()
     {
-        if (originalMat == null)
-        {
-            l.Write("none");
-            return;
-        }
+        if (originalMat == null) return;
 
-        l.Write("HSV_on");
         var img = originalMat.Clone();
-
-
-        CvInvoke.CvtColor(img, img, ColorConversion.Bgr2Hsv);
 
         var hue = HueSlider.Slider.Value;
         var saturation = SaturationSlider.Slider.Value;
         var value = ValueSlider.Slider.Value;
-
-        var image = img.Clone().ToImage<Hsv, byte>();
-
-        for (var y = 0; y < image.Height; y++)
-        {
-            for (var x = 0; x < image.Width; x++)
-            {
-                image.Data[x, y, 0] = (byte)hue;
-                image.Data[x, y, 1] = (byte)saturation;
-                image.Data[x, y, 0] += (byte)value;
-            }
-        }
-
-        filteredMat = image.ToBitmap().ToMat();
+        
+        filteredMat = Filter.HcvImage(img, hue, saturation, value).ToBitmap().ToMat();
 
         Image.Source = Filter.BitmapSourceFromHBitmap(filteredMat);
     }
+    
 
     private void HSVSlider_OnValueChanged(object sender,
         RoutedPropertyChangedEventArgs<double> routedpropertychangedeventargs)
@@ -385,21 +266,12 @@ public partial class MainWindow : Window
 
     private void ApplyBlurFilter()
     {
-        if (originalMat == null)
-        {
-            l.Write("none");
-            return;
-        }
-
-        l.Write("Blur_on");
-        var img = originalMat;
+        if (originalMat == null) return;
 
         var outputImage = new Mat();
 
         var coreSize = (int)SliderCore.Slider.Value;
-
-        CvInvoke.Blur(img, outputImage, new Size(coreSize, coreSize), new Point(-1, -1), BorderType.Default);
-
+        
         filteredMat = outputImage;
 
         Image.Source = Filter.BitmapSourceFromHBitmap(filteredMat);
@@ -441,37 +313,25 @@ public partial class MainWindow : Window
 
     private void ApplyMathFilter()
     {
-        if (originalMat == null || mathMaskImage == null)
-        {
-            l.Write("none");
-            return;
-        }
+        if (originalMat == null || mathMaskImage == null) return;
         
-        l.Write("Math_on");
-        var img = originalMat.Clone();
+        var img = originalMat.Clone().ToImage<Bgr, byte>();
 
         switch (_mathTypeOp)
         {
             case 1:
-                l.Write("type 1");
-                CvInvoke.BitwiseNot(img, mathMaskImage.Clone());
+                img = Filter.Exception(img.Clone(), mathMaskImage.Clone().ToImage<Bgr, byte>());
                 break;
             case 2:
-                l.Write("type 2");
-                CvInvoke.BitwiseXor(img, mathMaskImage.Clone(), img);
+                img = Filter.Addition(img.Clone(), mathMaskImage.Clone().ToImage<Bgr, byte>(), 0.5, 0.5);
                 break;
             case 3:
-                l.Write("type 3");
-                CvInvoke.BitwiseAnd(img, mathMaskImage.Clone(), img);
-                break;
-            default:
-                l.Write("type 0");
+                img = Filter.Exception(img.Clone(), mathMaskImage.Clone().ToImage<Bgr, byte>());
                 break;
         }
 
-        filteredMat = img;
+        filteredMat = img.ToBitmap().ToMat();
 
         Image.Source = Filter.BitmapSourceFromHBitmap(filteredMat);
-        l.Write("Math_apply");
     }
 }

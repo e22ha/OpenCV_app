@@ -15,6 +15,10 @@
 
     <ItemGroup>
       <Resource Include="Resources\placeholder.png" />
+      <None Remove="Resources\defualt_image.png" />
+      <Resource Include="Resources\default_image.png" />
+      <None Remove="Resources\defualt_mask.png" />
+      <Resource Include="Resources\default_mask.png" />
     </ItemGroup>
 
     <ItemGroup>

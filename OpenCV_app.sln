@@ -4,6 +4,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenCV1_lern", "OpenCV1_ler
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenCV2_photoapp", "OpenCV2_photoapp\OpenCV2_photoapp.csproj", "{4717C611-0D40-46CC-8111-326741CF1933}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{CF0F927B-DF5A-446D-A975-AE21D8ED2476}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +20,9 @@ Global
 		{4717C611-0D40-46CC-8111-326741CF1933}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4717C611-0D40-46CC-8111-326741CF1933}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4717C611-0D40-46CC-8111-326741CF1933}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CF0F927B-DF5A-446D-A975-AE21D8ED2476}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CF0F927B-DF5A-446D-A975-AE21D8ED2476}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CF0F927B-DF5A-446D-A975-AE21D8ED2476}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CF0F927B-DF5A-446D-A975-AE21D8ED2476}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
