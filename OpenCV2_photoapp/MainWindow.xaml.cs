@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Net.Mime;
@@ -11,6 +12,7 @@ using Emgu.CV.Structure;
 using Emgu.CV.Util;
 using Microsoft.Win32;
 using System.Windows.Controls;
+using Image = System.Drawing.Image;
 using Point = System.Drawing.Point;
 using Size = System.Drawing.Size;
 
@@ -174,8 +176,7 @@ public partial class MainWindow : Window
 
         var image = originalMat.Clone().ToImage<Bgr, byte>();
 
-        //TODO: set right value range 
-        var contrastValue = ContrastSlider.Slider.Value / 100;
+        var contrastValue = ContrastSlider.Slider.Value/10;
         var brightnessValue = BrightnessSlider.Slider.Value / 100 * 255;
 
         filteredMat = Filter.ContrastBrightness(image, contrastValue, brightnessValue).ToBitmap().ToMat();
@@ -324,7 +325,7 @@ public partial class MainWindow : Window
                 img = Filter.Addition(img.Clone(), mathMaskImage.Clone().ToImage<Bgr, byte>(), 0.5, 0.5);
                 break;
             case 3:
-                img = Filter.Exception(img.Clone(), mathMaskImage.Clone().ToImage<Bgr, byte>());
+                img = Filter.Intersection(img.Clone(), mathMaskImage.Clone().ToImage<Bgr, byte>());
                 break;
         }
 
@@ -373,4 +374,78 @@ public partial class MainWindow : Window
         };
         ApplyWinFilter();
     }
+
+    private void Watercolor_filter_OnSwitchChanged(object sender, bool e)
+    {
+        switch (e)
+        {
+            case true:
+                LoadImageForWaterColor_OnClick(sender, null);
+                break;
+            case false:
+                Image.Source = Filter.BitmapSourceFromHBitmap(originalMat);
+                break;
+        }
+    }
+
+    private void ApplyWatercolorFilter()
+    {
+        if (originalMat == null || mathMaskImage == null) return;
+
+        var img = originalMat.Clone().ToImage<Bgr, byte>();
+
+        Image<Bgr, byte> watercolorImage = Filter.ContrastBrightness(img, 1, -50);
+
+        watercolorImage = Filter.Blur(watercolorImage.Clone().ToBitmap().ToMat());
+
+
+        filteredMat = Filter.Addition(watercolorImage, mathMaskImage.Clone().ToImage<Bgr, byte>(),
+            kSlider.Slider.Value * 0.1, (10 - kSlider.Slider.Value) * 0.1).ToBitmap().ToMat();
+
+        Image.Source = Filter.BitmapSourceFromHBitmap(filteredMat);
+    }
+
+    private void LoadImageForWaterColor_OnClick(object sender, RoutedEventArgs e)
+    {
+        var openFileDialog = new OpenFileDialog
+        {
+            Filter = "Image files (*.png;*.jpeg;*.jpg)|*.png;*.jpeg;*.jpg"
+        };
+        if (openFileDialog.ShowDialog() != true) return;
+        mathMaskImage = CvInvoke.Imread(openFileDialog.FileName);
+        ApplyWatercolorFilter();
+    }
+
+    private void KSlider_OnValueChanged(object sender,
+        RoutedPropertyChangedEventArgs<double> routedpropertychangedeventargs)
+    {
+        ApplyWatercolorFilter();
+    }
+
+    private void Cartoon_filter_OnSwitchChanged(object sender, bool e)
+    {
+        switch (e)
+        {
+            case true:
+                ApplyCartoonFilter();
+                break;
+            case false:
+                Image.Source = Filter.BitmapSourceFromHBitmap(originalMat);
+                break;
+        }
+    }
+
+    private void ApplyCartoonFilter()
+    {
+        if (originalMat == null) return;
+
+        var img = originalMat.Clone().ToImage<Gray, byte>();
+        
+        filteredMat = Filter.Blur(originalMat).ToBitmap().ToMat();
+        
+        filteredMat = Filter.Cartoon(img, filteredMat.Clone()).ToBitmap().ToMat();
+
+        Image.Source = Filter.BitmapSourceFromHBitmap(filteredMat);
+    }
+    
 }

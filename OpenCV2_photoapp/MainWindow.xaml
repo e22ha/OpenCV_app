@@ -125,11 +125,11 @@
                         <TextBlock Text="Brightness" />
                         <openCv2Photoapp:SliderWTb x:Name="BrightnessSlider" SliderValue="0" Minimum="-100"
                                                    Maximum="100"
-                                                   Step="1"
+                                                   Step="10"
                                                    ValueChanged="BrightnessContrastSlider_OnValueChanged" />
                         <TextBlock Text="Contrast" />
-                        <openCv2Photoapp:SliderWTb x:Name="ContrastSlider" SliderValue="100" Minimum="0" Maximum="200"
-                                                   Step="10"
+                        <openCv2Photoapp:SliderWTb x:Name="ContrastSlider" SliderValue="10" Minimum="1" Maximum="20"
+                                                   Step="1"
                                                    ValueChanged="BrightnessContrastSlider_OnValueChanged" />
                     </StackPanel>
                 </Grid>
@@ -181,6 +181,20 @@
                                  Click="WinRadioButton_OnClick" Foreground="Azure"/>
                     <RadioButton x:Name="EmbosRadioButton" GroupName="Math" Content="Embos"
                                  Click="WinRadioButton_OnClick" Foreground="Azure"/>
+                </StackPanel>
+                <openCv2Photoapp:FilterControl Title="Watercolor" Margin="0 10" TargetElementName="WC"
+                                               CountRow="2"
+                                               SwitchChanged="Watercolor_filter_OnSwitchChanged" />
+                <StackPanel Name="WC" Height="0">
+                    <Button Content="load" Style="{StaticResource ButtonLoadStyle}" Click="LoadImageForWaterColor_OnClick" Width="100" HorizontalAlignment="Left"/>
+                    <openCv2Photoapp:SliderWTb x:Name="kSlider" SliderValue="5" Minimum="0" Maximum="10"
+                                               Step="1"
+                                               ValueChanged="KSlider_OnValueChanged" />
+                </StackPanel>
+                <openCv2Photoapp:FilterControl Title="Cartoon" Margin="0 10" TargetElementName="Cartoon"
+                                               CountRow="2"
+                                               SwitchChanged="Cartoon_filter_OnSwitchChanged" />
+                <StackPanel Name="Cartoon" Height="0">
                 </StackPanel>
             </StackPanel>
         </Grid>

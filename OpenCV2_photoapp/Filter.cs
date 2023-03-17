@@ -23,23 +23,6 @@ public class Filter
         return bitmapSourceFromHBitmap;
     }
 
-    /*Вывод значений одного из трёх цветовых каналов по выбору пользователя.
-    Вывод чёрно-белой верспп изображенпя. 
-    Вывод Sepia версии изображения.
-    Вывод изображения с возможностью изменен11я его яркости и контраста. 
-    Вывод результатов логических операций 
-        «дополнение», 
-        «исключение» и «пересечение»,
-        с возможностью выбора изображения для соответствующей операции. 
-    Вывод изображения преобразованного в формат HSV, с возможностью изменения значений HSV. 
-    Вывод изображений с применештем к ним медианного размытия. 
-    Вывод изображений с применением к ним оконного фильтра,
-        с возможностью  изменения матрицы фильтра из формы приложения. 
-    Вывод изображений с применением к ним «акварельного фильтра»,
-        а так же, возможностью выбора яркости,
-        контраста и параметров смешивания изображений.
-    Вывод изображений с применением к ним «cartoon filter» и 
-        возможностью изменения порога преобразования изображения.*/
     public static Image<Gray, byte> BWImage(Image<Bgr, byte> image)
     {
         var grayImage = new Image<Gray, byte>(image.Size);
@@ -87,9 +70,9 @@ public class Filter
                 var g = image.Data[y, x, 1];
                 var r = image.Data[y, x, 2];
 
-                r = between0255(((r / 255.0f - 0.5f) * contrastValue + 0.5f) * 255.0f);
-                g = between0255(((g / 255.0f - 0.5f) * contrastValue + 0.5f) * 255.0f);
-                b = between0255(((b / 255.0f - 0.5f) * contrastValue + 0.5f) * 255.0f);
+                r = between0255(r  * contrastValue);
+                g = between0255(g * contrastValue);
+                b = between0255(b  * contrastValue );
 
                 r = between0255(r + brightnessValue);
                 g = between0255(g + brightnessValue);
@@ -144,6 +127,8 @@ public class Filter
     {
         var outputImage = img1.Clone();
 
+        img2 = img2.Resize(outputImage.Size.Width, outputImage.Size.Height, Inter.Area);
+
         for (var y = 0; y < outputImage.Size.Height; y++)
         for (var x = 0; x < outputImage.Size.Width; x++)
         {
@@ -158,6 +143,7 @@ public class Filter
     public static Image<Bgr, byte> Exception(Image<Bgr, byte> img1, Image<Bgr, byte> img2)
     {
         var outputImage = img1.Clone();
+        img2 = img2.Resize(outputImage.Size.Width, outputImage.Size.Height, Inter.Area);
 
         for (var y = 0; y < outputImage.Size.Height; y++)
         for (var x = 0; x < outputImage.Size.Width; x++)
@@ -173,6 +159,8 @@ public class Filter
     public static Image<Bgr, byte> Intersection(Image<Bgr, byte> img1, Image<Bgr, byte> img2)
     {
         var outputImage = img1.Clone();
+        
+        img2 = img2.Resize(outputImage.Size.Width, outputImage.Size.Height, Inter.Area);
 
         for (var y = 0; y < outputImage.Size.Height; y++)
         for (var x = 0; x < outputImage.Size.Width; x++)
@@ -213,13 +201,10 @@ public class Filter
         var outputImage = blur.CopyBlank();
 
         var list = new List<byte>();
-
-        const int sh = 6;
-        const int N = 13;
-
+        
         for (var c = 0; c < 3; c++)
-        for (var y = sh; y < blur.Size.Height - sh; y++)
-        for (var x = sh; x < blur.Size.Width - sh; x++)
+        for (var y = 1; y < blur.Size.Height - 1; y++)
+        for (var x = 1; x < blur.Size.Width - 1; x++)
         {
             list.Clear();
 
@@ -231,7 +216,7 @@ public class Filter
 
             list.Sort();
 
-            outputImage.Data[y, x, c] = list[N / 2];
+            outputImage.Data[y, x, c] = list[list.Count / 2];
         }
 
         return outputImage;
@@ -241,7 +226,7 @@ public class Filter
     {
         var gray = clone.Convert<Gray, byte>();
         var result = gray.CopyBlank();
-        
+
         var window = winTypeOp switch
         {
             1 => new int[3, 3] { { -1, -1, -1 }, { -1, 9, -1 }, { -1, -1, -1 } },
@@ -259,10 +244,29 @@ public class Filter
             {
                 r += gray.Data[i + y, j + x, 0] * window[i + 1, j + 1];
             }
-            
+
             result.Data[y, x, 0] = between0255(r);
         }
 
         return result;
+    }
+
+    public static Image<Bgr, byte> Cartoon(Image<Gray, byte> img, Mat clone)
+    {
+        var outputImage = clone.ToImage<Bgr, byte>().Clone();
+
+        var edges = img.Convert<Gray, byte>();
+        edges = edges.ThresholdAdaptive(new Gray(100), AdaptiveThresholdType.MeanC, ThresholdType.Binary, 3,
+            new Gray(0.03));
+
+        for (var y = 0; y < clone.Size.Height; y++)
+        for (var x = 0; x < clone.Size.Width; x++)
+        {
+            outputImage.Data[y, x, 0] = between0255(outputImage.Data[y, x, 0] * 0.12 * edges.Data[y, x, 0] * 0.12);
+            outputImage.Data[y, x, 1] = between0255(outputImage.Data[y, x, 1] * 0.12 * edges.Data[y, x, 0] * 0.12);
+            outputImage.Data[y, x, 2] = between0255(outputImage.Data[y, x, 2] * 0.12 * edges.Data[y, x, 0] * 0.12);
+        }
+
+        return outputImage;
     }
 }
