@@ -9,6 +9,8 @@ namespace OpenCV2_photoapp;
 public partial class FilterControl : UserControl
 {
     public delegate void SwitchChangedEventHandler(object sender, bool e);
+
+    public bool Value;
     public event SwitchChangedEventHandler SwitchChanged = null!;
     public FilterControl()
     {
@@ -22,6 +24,7 @@ public partial class FilterControl : UserControl
     private void Switch_Ch(object sender, RoutedEventArgs e)
     {
         SwitchChanged?.Invoke(this, Switch.IsChecked ?? false);
+        Value = Switch.IsChecked ?? false;
     }
     
 

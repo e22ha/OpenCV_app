@@ -7,4 +7,6 @@
   &lt;TestAncestor&gt;&#xD;
     &lt;TestId&gt;xUnit::4BDDC63B-D703-4631-8F8A-079CE891BC9E::net7.0-windows::TestProject2.UnitTest1.TestBetween0255&lt;/TestId&gt;&#xD;
   &lt;/TestAncestor&gt;&#xD;
-&lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>
+&lt;/SessionState&gt;</s:String>
+	<s:Boolean x:Key="/Default/UserDictionary/Words/=Embos/@EntryIndexedValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/UserDictionary/Words/=photoapp/@EntryIndexedValue">True</s:Boolean></wpf:ResourceDictionary>

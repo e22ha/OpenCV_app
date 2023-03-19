@@ -179,20 +179,7 @@ public class Filter
         res = Math.Min(res, 255);
         return (byte)res;
     }
-
-    public enum Filters
-    {
-        RGB,
-        BW,
-        Sepia,
-        BC,
-        Math,
-        HSV,
-        Win,
-        Aqua,
-        Caartoon
-    }
-
+    
 
     public static Image<Bgr, byte> Blur(Mat img)
     {
