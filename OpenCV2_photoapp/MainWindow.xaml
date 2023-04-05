@@ -24,7 +24,7 @@
                 <Setter Property="BorderThickness" Value="1" />
                 <Setter Property="BorderBrush" Value="Azure" />
                 <Setter Property="Background" Value="Transparent" />
-                <Setter Property="Foreground" Value="Azure"/>
+                <Setter Property="Foreground" Value="Azure" />
             </Style>
             <Style x:Key="ButtonStyle" TargetType="Button">
                 <Setter Property="Width" Value="Auto" />
@@ -33,7 +33,7 @@
                 <Setter Property="BorderThickness" Value="1" />
                 <Setter Property="BorderBrush" Value="Azure" />
                 <Setter Property="Background" Value="Transparent" />
-                <Setter Property="Foreground" Value="Azure"/>
+                <Setter Property="Foreground" Value="Azure" />
             </Style>
             <Style x:Key="ToggleButtonStyle" TargetType="ToggleButton">
                 <Setter Property="Width" Value="Auto" />
@@ -62,8 +62,8 @@
         <Menu Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" VerticalAlignment="Center" Background="#161616">
             <MenuItem Header="File" Style="{StaticResource MenuButtonStyle}">
                 <MenuItem Header="New" Style="{StaticResource MenuButtonStyle}" />
-                <MenuItem Header="Open" Style="{StaticResource MenuButtonStyle}" Click="Load_image"/>
-                <MenuItem Header="Save" Style="{StaticResource MenuButtonStyle}" Click="Save_image"/>
+                <MenuItem Header="Open" Style="{StaticResource MenuButtonStyle}" Click="Load_image" />
+                <MenuItem Header="Save" Style="{StaticResource MenuButtonStyle}" Click="Save_image" />
                 <Separator />
                 <MenuItem Header="Exit" Style="{StaticResource MenuButtonStyle}" />
             </MenuItem>
@@ -74,6 +74,10 @@
                 <MenuItem Header="Cut" Style="{StaticResource MenuButtonStyle}" />
                 <MenuItem Header="Copy" Style="{StaticResource MenuButtonStyle}" />
                 <MenuItem Header="Paste" Style="{StaticResource MenuButtonStyle}" />
+                <Separator />
+                <MenuItem Header="Scale" Style="{StaticResource MenuButtonStyle}" Click="Scale_btn"/>
+                <MenuItem Header="Shear" Style="{StaticResource MenuButtonStyle}" />
+                <MenuItem Header="Rotate" Style="{StaticResource MenuButtonStyle}" />
             </MenuItem>
             <MenuItem Header="About" Style="{StaticResource MenuButtonStyle}" />
         </Menu>
@@ -91,7 +95,8 @@
         </StackPanel>
         <Grid Name="Filter_panel" Grid.Column="1" Grid.Row="1" Margin="10" IsEnabled="False">
             <StackPanel Orientation="Vertical">
-                <openCv2Photoapp:FilterControl x:Name="RGBFilterControl" Title="RGB Filter" Margin="0 10" TargetElementName="RGB"
+                <openCv2Photoapp:FilterControl x:Name="RGBFilterControl" Title="RGB Filter" Margin="0 10"
+                                               TargetElementName="RGB"
                                                CountRow="1"
                                                SwitchChanged="RGB_filter" />
                 <Grid x:Name="RGB" Height="0">
@@ -110,14 +115,16 @@
                                   IsChecked="False" />
                     </StackPanel>
                 </Grid>
-                <openCv2Photoapp:FilterControl x:Name="BWFilterControl" Title="BW Filter" Margin="0 10" TargetElementName="BW"
+                <openCv2Photoapp:FilterControl x:Name="BWFilterControl" Title="BW Filter" Margin="0 10"
+                                               TargetElementName="BW"
                                                CountRow="0"
                                                SwitchChanged="BW_filter" />
                 <openCv2Photoapp:FilterControl Title="Sepia Filter" Margin="0 10" TargetElementName="Sepia"
                                                CountRow="1"
                                                SwitchChanged="Sepia_filter" />
 
-                <openCv2Photoapp:FilterControl x:Name="BCFilterControl" Title="BC filter" Margin="0 10" TargetElementName="BC"
+                <openCv2Photoapp:FilterControl x:Name="BCFilterControl" Title="BC filter" Margin="0 10"
+                                               TargetElementName="BC"
                                                CountRow="4"
                                                SwitchChanged="BrightnessContrast_filter" />
                 <Grid Name="BC" Height="0">
@@ -133,7 +140,8 @@
                                                    ValueChanged="BrightnessContrastSlider_OnValueChanged" />
                     </StackPanel>
                 </Grid>
-                <openCv2Photoapp:FilterControl x:Name="HcvFilterControl" Title="HCV filter" Margin="0 10" TargetElementName="HCV"
+                <openCv2Photoapp:FilterControl x:Name="HcvFilterControl" Title="HCV filter" Margin="0 10"
+                                               TargetElementName="HCV"
                                                CountRow="6"
                                                SwitchChanged="HCV_filter_OnSwitchChanged" />
                 <Grid Name="HCV" Height="0">
@@ -152,46 +160,53 @@
                                                    ValueChanged="HSVSlider_OnValueChanged" />
                     </StackPanel>
                 </Grid>
-                <openCv2Photoapp:FilterControl x:Name="MBlurFilterControl" Title="MBlur filter" Margin="0 10" TargetElementName="Blur"
+                <openCv2Photoapp:FilterControl x:Name="MBlurFilterControl" Title="MBlur filter" Margin="0 10"
+                                               TargetElementName="Blur"
                                                CountRow="0"
                                                SwitchChanged="Blur_filter_OnSwitchChanged" />
                 <Grid Name="Blur" Height="0">
                     <!--<openCv2Photoapp:SliderWTb x:Name="SliderCore" SliderValue="5" Minimum="1" Maximum="10" Step="1"
                                                ValueChanged="SliderCore_OnValueChanged" />-->
                 </Grid>
-                <openCv2Photoapp:FilterControl x:Name="MathFilterControl" Title="Math filter" Margin="0 10" TargetElementName="Math"
+                <openCv2Photoapp:FilterControl x:Name="MathFilterControl" Title="Math filter" Margin="0 10"
+                                               TargetElementName="Math"
                                                CountRow="4"
                                                SwitchChanged="Math_filter_OnSwitchChanged" />
                 <StackPanel Name="Math" Height="0">
-                        <RadioButton x:Name="AddRadioButton" GroupName="Math" Content="Add" IsChecked="True"
-                                     Click="MathRadioButton_OnClick" Foreground="Azure"/>
-                        <RadioButton x:Name="ExceptRadioButton" GroupName="Math" Content="Except"
-                                     Click="MathRadioButton_OnClick" Foreground="Azure"/>
-                        <RadioButton x:Name="IntersectRadioButton" GroupName="Math" Content="Intersect"
-                                     Click="MathRadioButton_OnClick" Foreground="Azure"/>
-                        <Button Content="load" Style="{StaticResource ButtonLoadStyle}" Click="LoadImageForMath_OnClick" Width="100" HorizontalAlignment="Left"/>
+                    <RadioButton x:Name="AddRadioButton" GroupName="Math" Content="Add" IsChecked="True"
+                                 Click="MathRadioButton_OnClick" Foreground="Azure" />
+                    <RadioButton x:Name="ExceptRadioButton" GroupName="Math" Content="Except"
+                                 Click="MathRadioButton_OnClick" Foreground="Azure" />
+                    <RadioButton x:Name="IntersectRadioButton" GroupName="Math" Content="Intersect"
+                                 Click="MathRadioButton_OnClick" Foreground="Azure" />
+                    <Button Content="load" Style="{StaticResource ButtonLoadStyle}" Click="LoadImageForMath_OnClick"
+                            Width="100" HorizontalAlignment="Left" />
                 </StackPanel>
-                <openCv2Photoapp:FilterControl x:Name="WinFilterControl" Title="Win filter" Margin="0 10" TargetElementName="Win"
+                <openCv2Photoapp:FilterControl x:Name="WinFilterControl" Title="Win filter" Margin="0 10"
+                                               TargetElementName="Win"
                                                CountRow="3"
                                                SwitchChanged="Win_filter_OnSwitchChanged" />
                 <StackPanel Name="Win" Height="0">
                     <RadioButton x:Name="EdgeRadioButton" GroupName="Math" Content="Edge"
-                                 Click="WinRadioButton_OnClick" Foreground="Azure" IsChecked="True"/>
+                                 Click="WinRadioButton_OnClick" Foreground="Azure" IsChecked="True" />
                     <RadioButton x:Name="SharpenRadioButton" GroupName="Math" Content="Sharpen"
-                                 Click="WinRadioButton_OnClick" Foreground="Azure"/>
+                                 Click="WinRadioButton_OnClick" Foreground="Azure" />
                     <RadioButton x:Name="EmbosRadioButton" GroupName="Math" Content="Embos"
-                                 Click="WinRadioButton_OnClick" Foreground="Azure"/>
+                                 Click="WinRadioButton_OnClick" Foreground="Azure" />
                 </StackPanel>
-                <openCv2Photoapp:FilterControl x:Name="WatercolorFilterControl" Title="Watercolor" Margin="0 10" TargetElementName="WC"
+                <openCv2Photoapp:FilterControl x:Name="WatercolorFilterControl" Title="Watercolor" Margin="0 10"
+                                               TargetElementName="WC"
                                                CountRow="2"
                                                SwitchChanged="Watercolor_filter_OnSwitchChanged" />
                 <StackPanel Name="WC" Height="0">
-                    <Button Content="load" Style="{StaticResource ButtonLoadStyle}" Click="LoadImageForWaterColor_OnClick" Width="100" HorizontalAlignment="Left"/>
+                    <Button Content="load" Style="{StaticResource ButtonLoadStyle}"
+                            Click="LoadImageForWaterColor_OnClick" Width="100" HorizontalAlignment="Left" />
                     <openCv2Photoapp:SliderWTb x:Name="kSlider" SliderValue="5" Minimum="0" Maximum="10"
                                                Step="1"
                                                ValueChanged="KSlider_OnValueChanged" />
                 </StackPanel>
-                <openCv2Photoapp:FilterControl x:Name="CartoonFilterControl" Title="Cartoon" Margin="0 10" TargetElementName="Cartoon"
+                <openCv2Photoapp:FilterControl x:Name="CartoonFilterControl" Title="Cartoon" Margin="0 10"
+                                               TargetElementName="Cartoon"
                                                CountRow="2"
                                                SwitchChanged="Cartoon_filter_OnSwitchChanged" />
                 <StackPanel Name="Cartoon" Height="0">

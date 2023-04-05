@@ -48,12 +48,11 @@ public partial class MainWindow
     }
 
 
-    
     private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
     {
         throw new NotImplementedException();
     }
-    
+
     private void ToggleFilter_Click(object sender, RoutedEventArgs e)
     {
         Image.Source = (bool)ToggleFilter.IsChecked switch
@@ -82,13 +81,13 @@ public partial class MainWindow
         ToggleFilter.IsChecked = false;
         return _imageLoaded = true;
     }
-    
+
     private void Load_image(object sender, RoutedEventArgs e)
     {
         Filter_panel.IsEnabled = Load_image();
     }
-    
-    
+
+
     private void RGB_filter(object sender, bool e)
     {
         switch (e)
@@ -117,11 +116,11 @@ public partial class MainWindow
 
     private void RgbFilterCheckBox_OnChecked(object sender, RoutedEventArgs e)
     {
-        if(RGBFilterControl.Value)
-        ApplyRgbFilter();
+        if (RGBFilterControl.Value)
+            ApplyRgbFilter();
     }
 
-    
+
     private void BW_filter(object sender, bool e)
     {
         switch (e)
@@ -143,8 +142,8 @@ public partial class MainWindow
 
         Image.Source = Filter.BitmapSourceFromHBitmap(_filteredMat);
     }
-    
-    
+
+
     private void Sepia_filter(object sender, bool e)
     {
         switch (e)
@@ -167,7 +166,7 @@ public partial class MainWindow
         Image.Source = Filter.BitmapSourceFromHBitmap(_filteredMat);
     }
 
-    
+
     private void ApplyBcFilter()
     {
         var image = _originalMat.Clone().ToImage<Bgr, byte>();
@@ -179,11 +178,11 @@ public partial class MainWindow
 
         Image.Source = Filter.BitmapSourceFromHBitmap(_filteredMat);
     }
-    
+
     private void BrightnessContrastSlider_OnValueChanged(object sender,
         RoutedPropertyChangedEventArgs<double> routedPropertyChangedEventArgs)
     {
-        if(BCFilterControl.Value)
+        if (BCFilterControl.Value)
             ApplyBcFilter();
     }
 
@@ -200,7 +199,7 @@ public partial class MainWindow
         }
     }
 
-    
+
     private void HCV_filter_OnSwitchChanged(object sender, bool e)
     {
         switch (e)
@@ -226,15 +225,15 @@ public partial class MainWindow
 
         Image.Source = Filter.BitmapSourceFromHBitmap(_filteredMat);
     }
-    
+
     private void HSVSlider_OnValueChanged(object sender,
         RoutedPropertyChangedEventArgs<double> routedPropertyChangedEventArgs)
     {
-        if(HcvFilterControl.Value)
+        if (HcvFilterControl.Value)
             ApplyHsvFilter();
     }
 
-    
+
     private void Blur_filter_OnSwitchChanged(object sender, bool e)
     {
         switch (e)
@@ -257,7 +256,7 @@ public partial class MainWindow
         Image.Source = Filter.BitmapSourceFromHBitmap(_filteredMat);
     }
 
-    
+
     private void LoadImageForMath_OnClick(object? sender, RoutedEventArgs? e)
     {
         var openFileDialog = new OpenFileDialog
@@ -317,7 +316,7 @@ public partial class MainWindow
         Image.Source = Filter.BitmapSourceFromHBitmap(_filteredMat);
     }
 
-    
+
     private void ApplyWinFilter()
     {
         var img = _originalMat.Clone().ToImage<Gray, byte>();
@@ -355,7 +354,7 @@ public partial class MainWindow
         ApplyWinFilter();
     }
 
-    
+
     private void Watercolor_filter_OnSwitchChanged(object sender, bool e)
     {
         switch (e)
@@ -397,11 +396,11 @@ public partial class MainWindow
     private void KSlider_OnValueChanged(object sender,
         RoutedPropertyChangedEventArgs<double> routedPropertyChangedEventArgs)
     {
-        if(WatercolorFilterControl.Value)
+        if (WatercolorFilterControl.Value)
             ApplyWatercolorFilter();
     }
 
-    
+
     private void Cartoon_filter_OnSwitchChanged(object sender, bool e)
     {
         switch (e)
@@ -425,8 +424,8 @@ public partial class MainWindow
 
         Image.Source = Filter.BitmapSourceFromHBitmap(_filteredMat);
     }
-    
-    
+
+
     private void Save_image(object sender, RoutedEventArgs routedEventArgs)
     {
         var defaultFileName = "OpenCV_" + "_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".png";
@@ -438,5 +437,37 @@ public partial class MainWindow
         if (saveFileDialog.ShowDialog() != true) return;
 
         _filteredMat.Save(saveFileDialog.FileName);
+    }
+
+    private void Scale_btn(object sender, RoutedEventArgs e)
+    {
+        var scaleSlider = new WindowWithSlider("Scale");
+        scaleSlider.ValueChanged += (s, args) => ApplyScale(s, args);
+        scaleSlider.Closing += (s, args) => scaleSlider.ValueChanged -= (s, args) => ApplyScale(s, args);
+        scaleSlider.Show();
+    }
+
+    private void ApplyScale(object sender, RoutedPropertyChangedEventArgs<double> e)
+    {
+        var scaleSlider = (WindowWithSlider)sender;
+        var sX = scaleSlider.Value[0];
+        var sY = scaleSlider.Value[1];
+
+        var img = _originalMat.Clone().ToImage<Bgr, byte>();
+        var newImage = new Image<Bgr, byte>((int)(img.Width * sX), (int)(img.Height * sY));
+        for (var x = 0; x < img.Width; x++)
+        {
+            for (var y = 0; y < img.Height; y++)
+            {
+                var newX = (int)(x * sX);
+                var newY = (int)(y * sY);
+
+                newImage[newY, newX] = img[y, x];
+            }
+        }
+
+        _filteredMat = newImage.ToBitmap().ToMat();
+
+        Image.Source = Filter.BitmapSourceFromHBitmap(_filteredMat);
     }
 }
