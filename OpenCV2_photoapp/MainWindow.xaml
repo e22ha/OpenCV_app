@@ -76,7 +76,7 @@
                 <MenuItem Header="Paste" Style="{StaticResource MenuButtonStyle}" />
                 <Separator />
                 <MenuItem Header="Scale" Style="{StaticResource MenuButtonStyle}" Click="Scale_btn"/>
-                <MenuItem Header="Shear" Style="{StaticResource MenuButtonStyle}" />
+                <MenuItem Header="Shear" Style="{StaticResource MenuButtonStyle}" Click="Shear_btn"/>
                 <MenuItem Header="Rotate" Style="{StaticResource MenuButtonStyle}" />
             </MenuItem>
             <MenuItem Header="About" Style="{StaticResource MenuButtonStyle}" />

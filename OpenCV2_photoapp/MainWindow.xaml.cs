@@ -441,9 +441,9 @@ public partial class MainWindow
 
     private void Scale_btn(object sender, RoutedEventArgs e)
     {
-        var scaleSlider = new WindowWithSlider("Scale");
-        scaleSlider.ValueChanged += (s, args) => ApplyScale(s, args);
-        scaleSlider.Closing += (s, args) => scaleSlider.ValueChanged -= (s, args) => ApplyScale(s, args);
+        var scaleSlider = new WindowWithSlider("Scale", 0, 5, 1, 1);
+        scaleSlider.ValueChanged += ApplyScale;
+        scaleSlider.Closing += (s, args) => scaleSlider.ValueChanged -= ApplyScale;
         scaleSlider.Show();
     }
 
@@ -454,13 +454,19 @@ public partial class MainWindow
         var sY = scaleSlider.Value[1];
 
         var img = _originalMat.Clone().ToImage<Bgr, byte>();
-        var newImage = new Image<Bgr, byte>((int)(img.Width * sX), (int)(img.Height * sY));
+        var newImage = new Image<Bgr, byte>(Convert.ToInt32(img.Width * sX), Convert.ToInt32(img.Height * sY));
         for (var x = 0; x < img.Width; x++)
         {
             for (var y = 0; y < img.Height; y++)
             {
-                var newX = (int)(x * sX);
-                var newY = (int)(y * sY);
+                var newX = Convert.ToInt32(x * sX);
+                var newY = Convert.ToInt32(y * sY);
+
+                if (newX < 0) newX = 0;
+                if (newX >= newImage.Width) newX = newImage.Width - 1;
+
+                if (newY < 0) newY = 0;
+                if (newY >= newImage.Height) newY = newImage.Height - 1;
 
                 newImage[newY, newX] = img[y, x];
             }
@@ -469,5 +475,43 @@ public partial class MainWindow
         _filteredMat = newImage.ToBitmap().ToMat();
 
         Image.Source = Filter.BitmapSourceFromHBitmap(_filteredMat);
+    }
+
+    private void ApplyShear(object sender, RoutedPropertyChangedEventArgs<double> e)
+    {
+        var shearSlider = (WindowWithSlider)sender;
+        var sX = shearSlider.Value[0];
+        var sY = shearSlider.Value[1];
+
+        var img = _originalMat.Clone().ToImage<Bgr, byte>();
+        var newImage = new Image<Bgr, byte>(img.Width, img.Height);
+        for (var x = 0; x < img.Width; x++)
+        {
+            for (var y = 0; y < img.Height; y++)
+            {
+                var newX = Convert.ToInt32(x + sX * (img.Width - y));
+                var newY = Convert.ToInt32(y + sY * (img.Height - x));
+
+                if (newX < 0) newX = 0;
+                if (newX >= newImage.Width) newX = newImage.Width - 1;
+
+                if (newY < 0) newY = 0;
+                if (newY >= newImage.Height) newY = newImage.Height - 1;
+
+                newImage[newY, newX] = img[y, x];
+            }
+        }
+
+        _filteredMat = newImage.ToBitmap().ToMat();
+
+        Image.Source = Filter.BitmapSourceFromHBitmap(_filteredMat);
+    }
+
+    private void Shear_btn(object sender, RoutedEventArgs e)
+    {
+        var shearSlider = new WindowWithSlider("Shear", -1, 1, 0, 0);
+        shearSlider.ValueChanged += ApplyShear;
+        shearSlider.Closing += (s, args) => shearSlider.ValueChanged -= ApplyScale;
+        shearSlider.Show();
     }
 }

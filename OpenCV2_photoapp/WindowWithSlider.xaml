@@ -8,9 +8,9 @@
             <RowDefinition></RowDefinition>
             <RowDefinition></RowDefinition>
         </Grid.RowDefinitions>
-        <openCv2Photoapp:SliderWTb Grid.Row="0" x:Name="kSlider" SliderValue="1" Minimum="0" Maximum="10"
-                                   Step="1" Width="200" VerticalAlignment="Center" />
-        <openCv2Photoapp:SliderWTb Grid.Row="1" x:Name="jSlider" SliderValue="1" Minimum="0" Maximum="10"
-                                   Step="1" Width="200" VerticalAlignment="Center" />
+        <openCv2Photoapp:SliderWTb Grid.Row="0" x:Name="xSlider" SliderValue="0" Minimum="0" Maximum="10"
+                                   Width="200" VerticalAlignment="Center" />
+        <openCv2Photoapp:SliderWTb Grid.Row="1" x:Name="ySlider" SliderValue="0" Minimum="0" Maximum="10"
+                                   Width="200" VerticalAlignment="Center" />
     </Grid>
 </Window>

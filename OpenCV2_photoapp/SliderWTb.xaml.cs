@@ -7,15 +7,11 @@ namespace OpenCV2_photoapp
 {
     public partial class SliderWTb : UserControl
     {
-        public static readonly DependencyProperty SliderValueProperty = DependencyProperty.Register(nameof(SliderValue), typeof(int), typeof(SliderWTb), new PropertyMetadata(default(int)));
-        public static readonly DependencyProperty MinimumProperty = DependencyProperty.Register(nameof(Minimum), typeof(int), typeof(SliderWTb), new PropertyMetadata(-100));
-        public static readonly DependencyProperty MaximumProperty = DependencyProperty.Register(nameof(Maximum), typeof(int), typeof(SliderWTb), new PropertyMetadata(100));
-        public static readonly DependencyProperty StepProperty = DependencyProperty.Register(nameof(Step), typeof(int), typeof(SliderWTb), new PropertyMetadata(1));
-        
-        public delegate void SliderChangedEventHandler(object sender, RoutedPropertyChangedEventArgs<double> routedPropertyChangedEventArgs);
+        public delegate void SliderChangedEventHandler(object sender,
+            RoutedPropertyChangedEventArgs<double> routedPropertyChangedEventArgs);
+
         public event SliderChangedEventHandler ValueChanged = null!;
-        
-        
+
 
         public SliderWTb()
         {
@@ -23,9 +19,22 @@ namespace OpenCV2_photoapp
             Slider.ValueChanged += Slider_OnValueChanged;
         }
 
-        public int SliderValue
+
+        public static readonly DependencyProperty SliderValueProperty = DependencyProperty.Register(nameof(SliderValue),
+            typeof(double), typeof(SliderWTb), new PropertyMetadata(default(double)));
+
+        public static readonly DependencyProperty MinimumProperty = DependencyProperty.Register(nameof(Minimum),
+            typeof(int), typeof(SliderWTb), new PropertyMetadata(-10));
+
+        public static readonly DependencyProperty MaximumProperty = DependencyProperty.Register(nameof(Maximum),
+            typeof(int), typeof(SliderWTb), new PropertyMetadata(10));
+
+        public static readonly DependencyProperty StepProperty =
+            DependencyProperty.Register(nameof(Step), typeof(double), typeof(SliderWTb), new PropertyMetadata(0.1));
+
+        public double SliderValue
         {
-            get => (int)GetValue(SliderValueProperty);
+            get => (double)GetValue(SliderValueProperty);
             set => SetValue(SliderValueProperty, value);
         }
 
@@ -41,12 +50,12 @@ namespace OpenCV2_photoapp
             set => SetValue(MaximumProperty, value);
         }
 
-        public int Step
+        public double Step
         {
-            get => (int)GetValue(StepProperty);
+            get => (double)GetValue(StepProperty);
             set => SetValue(StepProperty, value);
         }
-        
+
 
         private void Slider_OnValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {

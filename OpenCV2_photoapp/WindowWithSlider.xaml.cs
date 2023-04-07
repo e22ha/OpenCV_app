@@ -5,31 +5,42 @@ namespace OpenCV2_photoapp;
 
 public partial class WindowWithSlider : Window
 {
-    public int[] Value = { 1, 1 };
+    public double[] Value { get; }
 
     public event EventHandler<RoutedPropertyChangedEventArgs<double>> ValueChanged = null!;
 
-    public WindowWithSlider(string name)
+    public WindowWithSlider(string name, double min, double max, double xVal, double yVal)
     {
         InitializeComponent();
-        Title = name;
         
-        kSlider.Slider.Value = Value[0];
-        kSlider.ValueChanged += Slider1_ValueChanged;
+        Title = name;
+        // добавляем обработчик события Loaded для установки значений слайдеров
+        Loaded += (sender, args) =>
+        {
+            xSlider.Slider.Minimum = min;
+            xSlider.Slider.Value = xVal;
+            xSlider.Slider.Maximum = max;
+            xSlider.ValueChanged += Slider1_ValueChanged;
 
-        jSlider.Slider.Value = Value[1];
-        jSlider.ValueChanged += Slider2_ValueChanged;
+            ySlider.Slider.Minimum = min;
+            ySlider.Slider.Value = yVal;
+            ySlider.Slider.Maximum = max;
+            ySlider.ValueChanged += Slider2_ValueChanged;
+        };
+
+        Value = new[] { xVal, yVal };
     }
+    
 
     private void Slider1_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
     {
-        Value[0] = (int)e.NewValue;
+        Value[0] = (double)e.NewValue;
         ValueChanged?.Invoke(this, e);
     }
 
     private void Slider2_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
     {
-        Value[1] = (int)e.NewValue;
+        Value[1] = (double)e.NewValue;
         ValueChanged?.Invoke(this, e);
     }
 }
