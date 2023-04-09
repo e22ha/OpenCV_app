@@ -37,7 +37,7 @@ public partial class WindowWithSlider : Window
         
         Title = name;
         // добавляем обработчик события Loaded для установки значений слайдеров
-        Loaded += (sender, args) =>
+        Loaded += (_, _) =>
         {
             xSlider.Slider.Minimum = min;
             xSlider.Slider.Value = Val;

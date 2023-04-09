@@ -500,4 +500,40 @@ public partial class MainWindow
         _filteredMat = Filter.BinRotateImage(img, sX).ToBitmap().ToMat();
 
         Image.Source = Filter.BitmapSourceFromHBitmap(_filteredMat);    }
+
+    private void FlipH_btn(object sender, RoutedEventArgs e)
+    {
+        var img = _originalMat.Clone().ToImage<Bgr, byte>();
+
+        _filteredMat = Filter.Flip(img, true, false).ToBitmap().ToMat();
+        
+        Image.Source = Filter.BitmapSourceFromHBitmap(_filteredMat);
+    }
+    
+    private void FlipV_btn(object sender, RoutedEventArgs e)
+    {
+        var img = _originalMat.Clone().ToImage<Bgr, byte>();
+
+        _filteredMat = Filter.Flip(img, false, true).ToBitmap().ToMat();
+        
+        Image.Source = Filter.BitmapSourceFromHBitmap(_filteredMat);
+    }
+    
+    private void FlipB_btn(object sender, RoutedEventArgs e)
+    {
+        var img = _originalMat.Clone().ToImage<Bgr, byte>();
+
+        _filteredMat = Filter.Flip(img, true, true).ToBitmap().ToMat();
+        
+        Image.Source = Filter.BitmapSourceFromHBitmap(_filteredMat);
+    }
+    
+    private void kaleidoscope_btn(object sender, RoutedEventArgs e)
+    {
+        var img = _originalMat.Clone().ToImage<Bgr, byte>();
+
+        _filteredMat = Filter.ApplyKaleidoscopeEffect(img, 4).ToBitmap().ToMat();
+        
+        Image.Source = Filter.BitmapSourceFromHBitmap(_filteredMat);
+    }
 }

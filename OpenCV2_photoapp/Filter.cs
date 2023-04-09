@@ -1,6 +1,7 @@
 ﻿using System;
 using System.CodeDom;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Windows;
 using System.Windows.Interop;
@@ -362,6 +363,7 @@ public class Filter
 
         return newImage;
     }
+
     public static Image<Bgr, byte> RotateImage(Image<Bgr, byte> img, double angle)
     {
         var centerX = img.Width / 2.0;
@@ -389,9 +391,10 @@ public class Filter
                 newImage.Data[(int)newY, (int)newX, 2] = r;
             }
         }
+
         return newImage;
     }
-    
+
     public static Image<Bgr, byte> BinRotateImage(Image<Bgr, byte> img, double angle)
     {
         var centerX = img.Width / 2.0;
@@ -448,5 +451,70 @@ public class Filter
         return newImage;
     }
 
+
+    public static Image<Bgr, byte> Flip(Image<Bgr, byte> img, bool horizontal, bool vertical)
+    {
+        var newImage = new Image<Bgr, byte>(img.Width, img.Height);
+
+        for (var y = 0; y < img.Height; y++)
+        {
+            for (var x = 0; x < img.Width; x++)
+            {
+                var newX = horizontal ? img.Width - x - 1 : x;
+                var newY = vertical ? img.Height - y - 1 : y;
+
+                var b = img.Data[y, x, 0];
+                var g = img.Data[y, x, 1];
+                var r = img.Data[y, x, 2];
+                newImage.Data[newY, newX, 0] = b;
+                newImage.Data[newY, newX, 1] = g;
+                newImage.Data[newY, newX, 2] = r;
+            }
+        }
+
+        return newImage;
+    }
+
+    public static Image<Bgr, byte> ApplyKaleidoscopeEffect(Image<Bgr, byte> img, int numSections)
+    {
+        var kaleidoscopeImage = new Image<Bgr, byte>(img.Width, img.Height);
+
+        var cellWidth = img.Width / numSections;
+        var cellHeight = img.Height / numSections;
+
+        for (var i = 0; i < numSections; i++)
+        {
+            for (var j = 0; j < numSections; j++)
+            {
+                // Вычисляем размер уменьшенного изображения
+                var resizedWidth = cellWidth / 2;
+                var resizedHeight = cellHeight / 2;
+
+                // Создаем уменьшенное изображение и копируем секцию
+                var resizedImage = new Image<Bgr, byte>(resizedWidth, resizedHeight);
+                img.Copy(new Rectangle(i * cellWidth, j * cellHeight, cellWidth, cellHeight)).Resize(resizedWidth, resizedHeight, Inter.Linear).CopyTo(resizedImage);
+
+                for (var x = i * cellWidth; x < (i + 1) * cellWidth; x++)
+                {
+                    for (var y = j * cellHeight; y < (j + 1) * cellHeight; y++)
+                    {
+                        var mirroredX = 2 * (i * cellWidth + cellWidth / 2) - x - 1;
+                        var mirroredY = 2 * (j * cellHeight + cellHeight / 2) - y - 1;
+
+                        // Ограничение выхода за границы изображения
+                        mirroredX = Math.Max(0, Math.Min(mirroredX, img.Width - 1));
+                        mirroredY = Math.Max(0, Math.Min(mirroredY, img.Height - 1));
+
+                        // Копирование цвета пикселя в отраженную позицию
+                        kaleidoscopeImage.Data[y, x, 0] = resizedImage.Data[y % resizedHeight, x % resizedWidth, 0];
+                        kaleidoscopeImage.Data[y, x, 1] = resizedImage.Data[y % resizedHeight, x % resizedWidth, 1];
+                        kaleidoscopeImage.Data[y, x, 2] = resizedImage.Data[y % resizedHeight, x % resizedWidth, 2];
+                    }
+                }
+            }
+        }
+
+        return kaleidoscopeImage;
+    }
 
 }

@@ -78,6 +78,12 @@
                 <MenuItem Header="Scale" Style="{StaticResource MenuButtonStyle}" Click="Scale_btn"/>
                 <MenuItem Header="Shear" Style="{StaticResource MenuButtonStyle}" Click="Shear_btn"/>
                 <MenuItem Header="Rotate" Style="{StaticResource MenuButtonStyle}" Click="Rotate_btn"/>
+                <MenuItem Header="Mirror" Style="{StaticResource MenuButtonStyle}">
+                    <MenuItem Header="FlipHorizontal" Style="{StaticResource MenuButtonStyle}" Click="FlipH_btn"/>
+                    <MenuItem Header="FlipVertical" Style="{StaticResource MenuButtonStyle}" Click="FlipV_btn"/>
+                    <MenuItem Header="FlipBoth" Style="{StaticResource MenuButtonStyle}" Click="FlipB_btn"/>
+                    <MenuItem Header="Kaleidoscope" Style="{StaticResource MenuButtonStyle}" Click="kaleidoscope_btn"/>
+                </MenuItem>
             </MenuItem>
             <MenuItem Header="About" Style="{StaticResource MenuButtonStyle}" />
         </Menu>
