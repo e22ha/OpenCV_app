@@ -1,5 +1,7 @@
 ﻿using System;
+using System.CodeDom;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media;
@@ -70,9 +72,9 @@ public class Filter
                 var g = image.Data[y, x, 1];
                 var r = image.Data[y, x, 2];
 
-                r = between0255(r  * contrastValue);
+                r = between0255(r * contrastValue);
                 g = between0255(g * contrastValue);
-                b = between0255(b  * contrastValue );
+                b = between0255(b * contrastValue);
 
                 r = between0255(r + brightnessValue);
                 g = between0255(g + brightnessValue);
@@ -159,7 +161,7 @@ public class Filter
     public static Image<Bgr, byte> Intersection(Image<Bgr, byte> img1, Image<Bgr, byte> img2)
     {
         var outputImage = img1.Clone();
-        
+
         img2 = img2.Resize(outputImage.Size.Width, outputImage.Size.Height, Inter.Area);
 
         for (var y = 0; y < outputImage.Size.Height; y++)
@@ -179,7 +181,7 @@ public class Filter
         res = Math.Min(res, 255);
         return (byte)res;
     }
-    
+
 
     public static Image<Bgr, byte> Blur(Mat img)
     {
@@ -188,7 +190,7 @@ public class Filter
         var outputImage = blur.CopyBlank();
 
         var list = new List<byte>();
-        
+
         for (var c = 0; c < 3; c++)
         for (var y = 1; y < blur.Size.Height - 1; y++)
         for (var x = 1; x < blur.Size.Width - 1; x++)
@@ -256,4 +258,195 @@ public class Filter
 
         return outputImage;
     }
+
+    public static Image<Bgr, byte> shear_filter(Image<Bgr, byte> img, double sX, double sY)
+    {
+        var newImage = new Image<Bgr, byte>(img.Width, img.Height);
+        for (var x = 0; x < img.Width; x++)
+        {
+            for (var y = 0; y < img.Height; y++)
+            {
+                var newX = Convert.ToInt32(x + sX * (img.Width - y));
+                var newY = Convert.ToInt32(y + sY * (img.Height - x));
+
+                if (newX < 0) newX = 0;
+                if (newX >= newImage.Width) newX = newImage.Width - 1;
+
+                if (newY < 0) newY = 0;
+                if (newY >= newImage.Height) newY = newImage.Height - 1;
+
+                newImage[newY, newX] = img[y, x];
+            }
+        }
+
+        return newImage;
+    }
+
+
+    public static Image<Bgr, byte> ScaleFilter(Image<Bgr, byte> img, double sX, double sY)
+    {
+        var newImage = new Image<Bgr, byte>(Convert.ToInt32(img.Width * sX), Convert.ToInt32(img.Height * sY));
+        for (var x = 0; x < img.Width; x++)
+        {
+            for (var y = 0; y < img.Height; y++)
+            {
+                var newX = Convert.ToInt32(x * sX);
+                var newY = Convert.ToInt32(y * sY);
+
+                if (newX < 0) newX = 0;
+                if (newX >= newImage.Width) newX = newImage.Width - 1;
+
+                if (newY < 0) newY = 0;
+                if (newY >= newImage.Height) newY = newImage.Height - 1;
+
+                newImage[newY, newX] = img[y, x];
+            }
+        }
+
+        return newImage;
+    }
+
+    public static Image<Bgr, byte> BinScaleFilter(Image<Bgr, byte> img, double sX, double sY)
+    {
+        var newImage = new Image<Bgr, byte>(Convert.ToInt32(img.Width * sX), Convert.ToInt32(img.Height * sY));
+        for (var x = 0; x < newImage.Width - 1; x++)
+        {
+            double X = (int)(x / sX);
+            var baseX = Math.Floor(X);
+            if (baseX >= img.Width - 1) continue;
+
+            for (var y = 0; y < newImage.Height - 1; y++)
+            {
+                double Y = (int)(y / sY);
+
+                var baseY = Math.Floor(Y);
+
+                if (baseY >= img.Height - 1) continue;
+
+                var rX = X - baseX;
+                var rY = Y - baseY;
+
+                var irX = 1 - rX;
+                var irY = 1 - rY;
+
+                var px1 = new Bgr
+                {
+                    Blue = img.Data[(int)baseY, (int)baseX, 0] * irX +
+                           img.Data[(int)baseY, (int)(baseX + 1), 0] * rX,
+                    Green = img.Data[(int)baseY, (int)baseX, 1] * irX +
+                            img.Data[(int)baseY, (int)(baseX + 1), 1] * rX,
+                    Red = img.Data[(int)baseY, (int)baseX, 2] * irX +
+                          img.Data[(int)baseY, (int)(baseX + 1), 2] * rX
+                };
+
+                var px2 = new Bgr
+                {
+                    Blue = img.Data[(int)(baseY + 1), (int)baseX, 0] * irX +
+                           img.Data[(int)(baseY + 1), (int)(baseX + 1), 0] * rX,
+                    Green = img.Data[(int)(baseY + 1), (int)baseX, 1] * irX +
+                            img.Data[(int)(baseY + 1), (int)(baseX + 1), 1] * rX,
+                    Red = img.Data[(int)(baseY + 1), (int)baseX, 2] * irX +
+                          img.Data[(int)(baseY + 1), (int)(baseX + 1), 2] * rX
+                };
+
+                var px = new Bgr
+                {
+                    Blue = px1.Blue * irY + px2.Blue * rY,
+                    Green = px1.Green * irY + px2.Green * rY,
+                    Red = px1.Red * irY + px2.Red * rY
+                };
+
+                newImage[y, x] = px;
+            }
+        }
+
+        return newImage;
+    }
+    public static Image<Bgr, byte> RotateImage(Image<Bgr, byte> img, double angle)
+    {
+        var centerX = img.Width / 2.0;
+        var centerY = img.Height / 2.0;
+        var radians = angle * Math.PI / 180.0;
+        var cos = Math.Cos(radians);
+        var sin = Math.Sin(radians);
+
+        var newImage = new Image<Bgr, byte>(img.Width, img.Height);
+
+        for (var y = 0; y < img.Height; y++)
+        {
+            for (var x = 0; x < img.Width; x++)
+            {
+                var newX = (x - centerX) * cos - (y - centerY) * sin + centerX;
+                var newY = (x - centerX) * sin + (y - centerY) * cos + centerY;
+
+                if (!(newX >= 0) || !(newX < newImage.Width) || !(newY >= 0) || !(newY < newImage.Height)) continue;
+
+                var b = img.Data[y, x, 0];
+                var g = img.Data[y, x, 1];
+                var r = img.Data[y, x, 2];
+                newImage.Data[(int)newY, (int)newX, 0] = b;
+                newImage.Data[(int)newY, (int)newX, 1] = g;
+                newImage.Data[(int)newY, (int)newX, 2] = r;
+            }
+        }
+        return newImage;
+    }
+    
+    public static Image<Bgr, byte> BinRotateImage(Image<Bgr, byte> img, double angle)
+    {
+        var centerX = img.Width / 2.0;
+        var centerY = img.Height / 2.0;
+        var radians = angle * Math.PI / 180.0;
+        var cos = Math.Cos(radians);
+        var sin = Math.Sin(radians);
+
+        var newImage = new Image<Bgr, byte>(img.Width, img.Height);
+
+        for (var y = 0; y < newImage.Height; y++)
+        {
+            for (var x = 0; x < newImage.Width; x++)
+            {
+                var newX = (x - centerX) * cos - (y - centerY) * sin + centerX;
+                var newY = (x - centerX) * sin + (y - centerY) * cos + centerY;
+
+                if (!(newX >= 0) || !(newX < img.Width - 1) || !(newY >= 0) || !(newY < img.Height - 1)) continue;
+
+                var x1 = (int)Math.Floor(newX);
+                var y1 = (int)Math.Floor(newY);
+                var x2 = x1 + 1;
+                var y2 = y1 + 1;
+
+                var dx = newX - x1;
+                var dy = newY - y1;
+
+                var b1 = img.Data[y1, x1, 0];
+                var g1 = img.Data[y1, x1, 1];
+                var r1 = img.Data[y1, x1, 2];
+
+                var b2 = img.Data[y1, x2, 0];
+                var g2 = img.Data[y1, x2, 1];
+                var r2 = img.Data[y1, x2, 2];
+
+                var b3 = img.Data[y2, x1, 0];
+                var g3 = img.Data[y2, x1, 1];
+                var r3 = img.Data[y2, x1, 2];
+
+                var b4 = img.Data[y2, x2, 0];
+                var g4 = img.Data[y2, x2, 1];
+                var r4 = img.Data[y2, x2, 2];
+
+                var b = (byte)((1 - dx) * (1 - dy) * b1 + dx * (1 - dy) * b2 + (1 - dx) * dy * b3 + dx * dy * b4);
+                var g = (byte)((1 - dx) * (1 - dy) * g1 + dx * (1 - dy) * g2 + (1 - dx) * dy * g3 + dx * dy * g4);
+                var r = (byte)((1 - dx) * (1 - dy) * r1 + dx * (1 - dy) * r2 + (1 - dx) * dy * r3 + dx * dy * r4);
+
+                newImage.Data[y, x, 0] = b;
+                newImage.Data[y, x, 1] = g;
+                newImage.Data[y, x, 2] = r;
+            }
+        }
+
+        return newImage;
+    }
+
+
 }

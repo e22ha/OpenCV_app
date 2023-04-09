@@ -30,7 +30,27 @@ public partial class WindowWithSlider : Window
 
         Value = new[] { xVal, yVal };
     }
-    
+
+    public WindowWithSlider(string name, int min, int max, int Val)
+    {
+        InitializeComponent();
+        
+        Title = name;
+        // добавляем обработчик события Loaded для установки значений слайдеров
+        Loaded += (sender, args) =>
+        {
+            xSlider.Slider.Minimum = min;
+            xSlider.Slider.Value = Val;
+            xSlider.Slider.Maximum = max;
+            xSlider.ValueChanged += Slider1_ValueChanged;
+
+            ySlider.Visibility = Visibility.Collapsed;
+            
+        };
+
+        Value = new [] { Val, 0.0 };    
+    }
+
 
     private void Slider1_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
     {
