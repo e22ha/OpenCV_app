@@ -84,6 +84,7 @@
                     <MenuItem Header="FlipBoth" Style="{StaticResource MenuButtonStyle}" Click="FlipB_btn"/>
                     <MenuItem Header="Kaleidoscope" Style="{StaticResource MenuButtonStyle}" Click="kaleidoscope_btn"/>
                 </MenuItem>
+                <MenuItem Header="Homography" Style="{StaticResource MenuButtonStyle}" Click="Homography_btn"/>
             </MenuItem>
             <MenuItem Header="About" Style="{StaticResource MenuButtonStyle}" />
         </Menu>

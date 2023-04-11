@@ -498,12 +498,6 @@ public class Filter
                 {
                     for (var y = j * cellHeight; y < (j + 1) * cellHeight; y++)
                     {
-                        var mirroredX = 2 * (i * cellWidth + cellWidth / 2) - x - 1;
-                        var mirroredY = 2 * (j * cellHeight + cellHeight / 2) - y - 1;
-
-                        // Ограничение выхода за границы изображения
-                        mirroredX = Math.Max(0, Math.Min(mirroredX, img.Width - 1));
-                        mirroredY = Math.Max(0, Math.Min(mirroredY, img.Height - 1));
 
                         // Копирование цвета пикселя в отраженную позицию
                         kaleidoscopeImage.Data[y, x, 0] = resizedImage.Data[y % resizedHeight, x % resizedWidth, 0];

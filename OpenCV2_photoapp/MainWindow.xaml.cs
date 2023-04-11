@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
@@ -536,4 +538,39 @@ public partial class MainWindow
         
         Image.Source = Filter.BitmapSourceFromHBitmap(_filteredMat);
     }
+    
+    private void Homography_btn(object sender, RoutedEventArgs e)
+    {
+        // Создаем новое окно для выбора точек
+        var pointsWindow = new PointSelectionWindow(_originalMat.ToImage<Bgr, byte>())
+        {
+            Owner = this // Устанавливаем текущее окно владельцем для нового окна
+        };
+        pointsWindow.ShowDialog(); // Открываем окно для выбора точек
+
+        var srcPoints = pointsWindow.GetSourcePoints();
+        
+        var destPoints= new PointF[]{
+            // плоскость, на которую осуществляется проекция,
+            // задаётся четыремя точками
+            new PointF(0, 0),
+            new PointF(0, _originalMat.Height -1),
+            new PointF(_originalMat.Width -1, _originalMat.Height -1),
+            new PointF(_originalMat.Width -1, 0)};
+        if (srcPoints == null || destPoints == null)
+        {
+            return;
+        }
+        
+        // Выполняем гомографическое преобразование
+        var homographyMatrix = CvInvoke.GetPerspectiveTransform(srcPoints, destPoints);
+        var destImage = new Mat();
+        CvInvoke.WarpPerspective(_originalMat, destImage, homographyMatrix, _originalMat.Size);
+        
+        // Открываем новое окно для отображения результатов
+        CvInvoke.Imshow("Homography Result", destImage);
+        CvInvoke.WaitKey(0);
+    }
+
+
 }
