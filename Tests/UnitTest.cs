@@ -1,4 +1,4 @@
-using OpenCV2_photoapp;
+using OpenCV_photoapp;
 
 namespace Tests;
 

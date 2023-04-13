@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace OpenCV2_photoapp
+namespace OpenCV_photoapp
 {
     public partial class SliderWTb : UserControl
     {

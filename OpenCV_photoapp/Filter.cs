@@ -11,11 +11,11 @@ using Emgu.CV;
 using Emgu.CV.CvEnum;
 using Emgu.CV.Structure;
 
-namespace OpenCV2_photoapp;
+namespace OpenCV_photoapp;
 
 public class Filter
 {
-    public static ImageSource BitmapSourceFromHBitmap(Mat result)
+    public static ImageSource ImageSourceFromBitmap(Mat result)
     {
         var bitmap = result.ToBitmap();
         var bitmapSourceFromHBitmap = Imaging.CreateBitmapSourceFromHBitmap(

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows;
 
-namespace OpenCV2_photoapp;
+namespace OpenCV_photoapp;
 
 public partial class WindowWithSlider : Window
 {

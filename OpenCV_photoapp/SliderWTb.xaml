@@ -1,7 +1,7 @@
-﻿<UserControl x:Class="OpenCV2_photoapp.SliderWTb"
+﻿<UserControl x:Class="OpenCV_photoapp.SliderWTb"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:OpenCV2_photoapp">
+             xmlns:local="clr-namespace:OpenCV_photoapp">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />

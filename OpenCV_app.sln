@@ -2,7 +2,7 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenCV1_lern", "OpenCV1_lern\OpenCV1_lern.csproj", "{CCD27003-76A2-4E35-B2BC-F9E884F66478}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenCV2_photoapp", "OpenCV2_photoapp\OpenCV2_photoapp.csproj", "{4717C611-0D40-46CC-8111-326741CF1933}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenCV_photoapp", "OpenCV_photoapp\OpenCV_photoapp.csproj", "{4717C611-0D40-46CC-8111-326741CF1933}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{CF0F927B-DF5A-446D-A975-AE21D8ED2476}"
 EndProject

@@ -28,7 +28,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\OpenCV2_photoapp\OpenCV2_photoapp.csproj" />
+      <ProjectReference Include="..\OpenCV_photoapp\OpenCV_photoapp.csproj" />
     </ItemGroup>
 
 </Project>

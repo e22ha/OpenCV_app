@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace OpenCV2_photoapp;
+namespace OpenCV_photoapp;
 
 public partial class logWin : Window
 {

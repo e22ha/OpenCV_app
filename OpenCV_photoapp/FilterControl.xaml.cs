@@ -4,7 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 
-namespace OpenCV2_photoapp;
+namespace OpenCV_photoapp;
 
 public partial class FilterControl : UserControl
 {

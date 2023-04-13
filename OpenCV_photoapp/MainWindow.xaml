@@ -1,9 +1,9 @@
-﻿<Window x:Class="OpenCV2_photoapp.MainWindow"
+﻿<Window x:Class="OpenCV_photoapp.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:openCv2Photoapp="clr-namespace:OpenCV2_photoapp"
+        xmlns:openCv2Photoapp="clr-namespace:OpenCV_photoapp"
         mc:Ignorable="d"
         Title="Filter" Height="450" Width="800">
     <Grid Background="#161616">
@@ -217,6 +217,18 @@
                                                CountRow="2"
                                                SwitchChanged="Cartoon_filter_OnSwitchChanged" />
                 <StackPanel Name="Cartoon" Height="0">
+                </StackPanel>
+                <openCv2Photoapp:FilterControl x:Name="FindFilterControl" Title="Find" Margin="0 10"
+                                               TargetElementName="Find"
+                                               CountRow="2"
+                                               SwitchChanged="FindFilterControl_OnSwitchChanged" />
+                <StackPanel Name="Find" Height="0">
+                    <RadioButton x:Name="Circle" GroupName="ShapeType" Content="Circle"
+                                 Click="WinRadioButton_OnClick" Foreground="Azure" IsChecked="True" />
+                    <RadioButton x:Name="Rectangle" GroupName="ShapeType" Content="Rectangle"
+                                 Click="WinRadioButton_OnClick" Foreground="Azure" />
+                    <RadioButton x:Name="Triangle" GroupName="ShapeType" Content="Triangle"
+                                 Click="WinRadioButton_OnClick" Foreground="Azure" />
                 </StackPanel>
             </StackPanel>
         </Grid>

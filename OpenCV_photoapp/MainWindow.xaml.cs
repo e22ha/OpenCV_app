@@ -9,9 +9,11 @@ using Emgu.CV;
 using Emgu.CV.Structure;
 using Microsoft.Win32;
 using System.Windows.Controls;
+using Emgu.CV.CvEnum;
+using Emgu.CV.Util;
 
 
-namespace OpenCV2_photoapp;
+namespace OpenCV_photoapp;
 
 /// <summary>
 /// Interaction logic for MainWindow.xaml
@@ -59,8 +61,8 @@ public partial class MainWindow
     {
         Image.Source = (bool)ToggleFilter.IsChecked switch
         {
-            true => Filter.BitmapSourceFromHBitmap(_originalMat),
-            false => Filter.BitmapSourceFromHBitmap(_filterApplied ? _filteredMat : _originalMat)
+            true => Filter.ImageSourceFromBitmap(_originalMat),
+            false => Filter.ImageSourceFromBitmap(_filterApplied ? _filteredMat : _originalMat)
         };
     }
 
@@ -98,7 +100,7 @@ public partial class MainWindow
                 ApplyRgbFilter();
                 break;
             case false:
-                Image.Source = Filter.BitmapSourceFromHBitmap(_originalMat);
+                Image.Source = Filter.ImageSourceFromBitmap(_originalMat);
                 break;
         }
     }
@@ -113,7 +115,7 @@ public partial class MainWindow
 
         _filteredMat = Filter.RGBChSwitch(image, b, g, r).ToBitmap().ToMat();
 
-        Image.Source = Filter.BitmapSourceFromHBitmap(_filteredMat);
+        Image.Source = Filter.ImageSourceFromBitmap(_filteredMat);
     }
 
     private void RgbFilterCheckBox_OnChecked(object sender, RoutedEventArgs e)
@@ -131,7 +133,7 @@ public partial class MainWindow
                 ApplyBwFilter();
                 break;
             case false:
-                Image.Source = Filter.BitmapSourceFromHBitmap(_originalMat);
+                Image.Source = Filter.ImageSourceFromBitmap(_originalMat);
                 break;
         }
     }
@@ -142,7 +144,7 @@ public partial class MainWindow
 
         _filteredMat = Filter.BWImage(image).ToBitmap().ToMat();
 
-        Image.Source = Filter.BitmapSourceFromHBitmap(_filteredMat);
+        Image.Source = Filter.ImageSourceFromBitmap(_filteredMat);
     }
 
 
@@ -154,7 +156,7 @@ public partial class MainWindow
                 ApplySepiaFilter();
                 break;
             case false:
-                Image.Source = Filter.BitmapSourceFromHBitmap(_originalMat);
+                Image.Source = Filter.ImageSourceFromBitmap(_originalMat);
                 break;
         }
     }
@@ -165,7 +167,7 @@ public partial class MainWindow
 
         _filteredMat = Filter.Sepia(image).ToBitmap().ToMat();
 
-        Image.Source = Filter.BitmapSourceFromHBitmap(_filteredMat);
+        Image.Source = Filter.ImageSourceFromBitmap(_filteredMat);
     }
 
 
@@ -178,7 +180,7 @@ public partial class MainWindow
 
         _filteredMat = Filter.ContrastBrightness(image, contrastValue, brightnessValue).ToBitmap().ToMat();
 
-        Image.Source = Filter.BitmapSourceFromHBitmap(_filteredMat);
+        Image.Source = Filter.ImageSourceFromBitmap(_filteredMat);
     }
 
     private void BrightnessContrastSlider_OnValueChanged(object sender,
@@ -196,7 +198,7 @@ public partial class MainWindow
                 ApplyBcFilter();
                 break;
             case false:
-                Image.Source = Filter.BitmapSourceFromHBitmap(_originalMat);
+                Image.Source = Filter.ImageSourceFromBitmap(_originalMat);
                 break;
         }
     }
@@ -210,7 +212,7 @@ public partial class MainWindow
                 ApplyHsvFilter();
                 break;
             case false:
-                Image.Source = Filter.BitmapSourceFromHBitmap(_originalMat);
+                Image.Source = Filter.ImageSourceFromBitmap(_originalMat);
                 break;
         }
     }
@@ -225,7 +227,7 @@ public partial class MainWindow
 
         _filteredMat = Filter.HcvImage(img, hue, saturation, value).ToBitmap().ToMat();
 
-        Image.Source = Filter.BitmapSourceFromHBitmap(_filteredMat);
+        Image.Source = Filter.ImageSourceFromBitmap(_filteredMat);
     }
 
     private void HSVSlider_OnValueChanged(object sender,
@@ -244,7 +246,7 @@ public partial class MainWindow
                 ApplyBlurFilter();
                 break;
             case false:
-                Image.Source = Filter.BitmapSourceFromHBitmap(_originalMat);
+                Image.Source = Filter.ImageSourceFromBitmap(_originalMat);
                 break;
         }
     }
@@ -255,7 +257,7 @@ public partial class MainWindow
 
         _filteredMat = Filter.Blur(img).ToBitmap().ToMat();
 
-        Image.Source = Filter.BitmapSourceFromHBitmap(_filteredMat);
+        Image.Source = Filter.ImageSourceFromBitmap(_filteredMat);
     }
 
 
@@ -291,7 +293,7 @@ public partial class MainWindow
                 LoadImageForMath_OnClick(sender, null);
                 break;
             case false:
-                Image.Source = Filter.BitmapSourceFromHBitmap(_originalMat);
+                Image.Source = Filter.ImageSourceFromBitmap(_originalMat);
                 break;
         }
     }
@@ -315,7 +317,7 @@ public partial class MainWindow
 
         _filteredMat = img.ToBitmap().ToMat();
 
-        Image.Source = Filter.BitmapSourceFromHBitmap(_filteredMat);
+        Image.Source = Filter.ImageSourceFromBitmap(_filteredMat);
     }
 
 
@@ -327,7 +329,7 @@ public partial class MainWindow
 
         _filteredMat = img.ToBitmap().ToMat();
 
-        Image.Source = Filter.BitmapSourceFromHBitmap(_filteredMat);
+        Image.Source = Filter.ImageSourceFromBitmap(_filteredMat);
     }
 
     private void Win_filter_OnSwitchChanged(object sender, bool e)
@@ -338,7 +340,7 @@ public partial class MainWindow
                 ApplyWinFilter();
                 break;
             case false:
-                Image.Source = Filter.BitmapSourceFromHBitmap(_originalMat);
+                Image.Source = Filter.ImageSourceFromBitmap(_originalMat);
                 break;
         }
     }
@@ -365,7 +367,7 @@ public partial class MainWindow
                 LoadImageForWaterColor_OnClick(sender, null);
                 break;
             case false:
-                Image.Source = Filter.BitmapSourceFromHBitmap(_originalMat);
+                Image.Source = Filter.ImageSourceFromBitmap(_originalMat);
                 break;
         }
     }
@@ -381,7 +383,7 @@ public partial class MainWindow
         _filteredMat = Filter.Addition(watercolorImage, _mathMaskImage.Clone().ToImage<Bgr, byte>(),
             kSlider.Slider.Value * 0.1, (10 - kSlider.Slider.Value) * 0.1).ToBitmap().ToMat();
 
-        Image.Source = Filter.BitmapSourceFromHBitmap(_filteredMat);
+        Image.Source = Filter.ImageSourceFromBitmap(_filteredMat);
     }
 
     private void LoadImageForWaterColor_OnClick(object sender, RoutedEventArgs? e)
@@ -411,7 +413,7 @@ public partial class MainWindow
                 ApplyCartoonFilter();
                 break;
             case false:
-                Image.Source = Filter.BitmapSourceFromHBitmap(_originalMat);
+                Image.Source = Filter.ImageSourceFromBitmap(_originalMat);
                 break;
         }
     }
@@ -424,7 +426,7 @@ public partial class MainWindow
 
         _filteredMat = Filter.Cartoon(img, _filteredMat.Clone()).ToBitmap().ToMat();
 
-        Image.Source = Filter.BitmapSourceFromHBitmap(_filteredMat);
+        Image.Source = Filter.ImageSourceFromBitmap(_filteredMat);
     }
 
 
@@ -459,7 +461,7 @@ public partial class MainWindow
 
         _filteredMat = Filter.BinScaleFilter(img, sX, sY).ToBitmap().ToMat();
 
-        Image.Source = Filter.BitmapSourceFromHBitmap(_filteredMat);
+        Image.Source = Filter.ImageSourceFromBitmap(_filteredMat);
     }
     
 
@@ -473,7 +475,7 @@ public partial class MainWindow
 
         _filteredMat = Filter.shear_filter(img, sX, sY).ToBitmap().ToMat();
 
-        Image.Source = Filter.BitmapSourceFromHBitmap(_filteredMat);
+        Image.Source = Filter.ImageSourceFromBitmap(_filteredMat);
     }
     
 
@@ -501,7 +503,7 @@ public partial class MainWindow
 
         _filteredMat = Filter.BinRotateImage(img, sX).ToBitmap().ToMat();
 
-        Image.Source = Filter.BitmapSourceFromHBitmap(_filteredMat);    }
+        Image.Source = Filter.ImageSourceFromBitmap(_filteredMat);    }
 
     private void FlipH_btn(object sender, RoutedEventArgs e)
     {
@@ -509,7 +511,7 @@ public partial class MainWindow
 
         _filteredMat = Filter.Flip(img, true, false).ToBitmap().ToMat();
         
-        Image.Source = Filter.BitmapSourceFromHBitmap(_filteredMat);
+        Image.Source = Filter.ImageSourceFromBitmap(_filteredMat);
     }
     
     private void FlipV_btn(object sender, RoutedEventArgs e)
@@ -518,7 +520,7 @@ public partial class MainWindow
 
         _filteredMat = Filter.Flip(img, false, true).ToBitmap().ToMat();
         
-        Image.Source = Filter.BitmapSourceFromHBitmap(_filteredMat);
+        Image.Source = Filter.ImageSourceFromBitmap(_filteredMat);
     }
     
     private void FlipB_btn(object sender, RoutedEventArgs e)
@@ -527,7 +529,7 @@ public partial class MainWindow
 
         _filteredMat = Filter.Flip(img, true, true).ToBitmap().ToMat();
         
-        Image.Source = Filter.BitmapSourceFromHBitmap(_filteredMat);
+        Image.Source = Filter.ImageSourceFromBitmap(_filteredMat);
     }
     
     private void kaleidoscope_btn(object sender, RoutedEventArgs e)
@@ -536,7 +538,7 @@ public partial class MainWindow
 
         _filteredMat = Filter.ApplyKaleidoscopeEffect(img, 4).ToBitmap().ToMat();
         
-        Image.Source = Filter.BitmapSourceFromHBitmap(_filteredMat);
+        Image.Source = Filter.ImageSourceFromBitmap(_filteredMat);
     }
     
     private void Homography_btn(object sender, RoutedEventArgs e)
@@ -573,4 +575,81 @@ public partial class MainWindow
     }
 
 
+
+
+    private void FindFilterControl_OnSwitchChanged(object sender, bool e)
+    {
+        switch (e)
+        {
+            case true:
+                ApplyFindFilter();
+                break;
+            case false:
+                Image.Source = Filter.ImageSourceFromBitmap(_originalMat);
+                break;
+        }
+    }
+    
+    private void ApplyFindFilter()
+    {
+        var img = _originalMat.Clone().ToImage<Gray, byte>();
+
+        var threshold = new Gray(200); 
+        var color= new Gray(255);
+
+        var image = img.SmoothGaussian(5).ThresholdBinary(threshold, color);
+        
+        var contours = new VectorOfVectorOfPoint();
+        CvInvoke.FindContours(image,
+            contours,
+            null,
+            RetrType.List, 
+            ChainApproxMethod.ChainApproxSimple);
+
+
+        var contoursImage = new Mat();
+        CvInvoke.CvtColor(image.Clone().CopyBlank(), contoursImage, ColorConversion.Gray2Bgr); 
+        // CvInvoke.DrawContours(contoursImage, contours, -1, new MCvScalar(250, 0, 250), 2);
+        // CvInvoke.Imshow("Contours Image", contoursImage);
+        
+        // Определим форму каждого контура и нарисуем его в соответствующем цвете
+        for (var i = 0; i < contours.Size; i++)
+        {
+            var contour = contours[i];
+            var area = CvInvoke.ContourArea(contour);
+            if (area < 100)
+            {
+                continue;
+            }
+            var epsilon = CvInvoke.ArcLength(contour, true) * 0.1;
+            var approx = new VectorOfPoint();
+            CvInvoke.ApproxPolyDP(contour, approx, epsilon, true);
+
+            switch (approx.Size)
+            {
+                // Треугольник
+                case 3:
+                    CvInvoke.DrawContours(contoursImage, contours, i, new MCvScalar(0, 255, 0), 2);
+                    break;
+                // Четырехугольник
+                case 4:
+                    CvInvoke.DrawContours(contoursImage, contours, i, new MCvScalar(255, 0, 0), 2);
+                    break;
+                // Круг
+                case > 4:
+                    CvInvoke.DrawContours(contoursImage, contours, i, new MCvScalar(0, 0, 255), 2);
+                    break;
+            }
+        }
+
+        // Отобразим изображение с выделенными объектами
+        CvInvoke.Imshow("Contours Image", contoursImage);
+
+
+        
+        
+        _filteredMat = image.ToBitmap().ToMat();
+        
+        Image.Source = Filter.ImageSourceFromBitmap(_filteredMat);
+    }
 }

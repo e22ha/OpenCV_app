@@ -11,7 +11,7 @@ using Brushes = System.Drawing.Brushes;
 using Point = System.Windows.Point;
 
 
-namespace OpenCV2_photoapp;
+namespace OpenCV_photoapp;
 
 public partial class PointSelectionWindow : Window
 {
@@ -23,7 +23,7 @@ public partial class PointSelectionWindow : Window
         InitializeComponent();
 
         _image = image;
-        canvas.Background = new ImageBrush(Filter.BitmapSourceFromHBitmap(_image.ToBitmap().ToMat()));
+        canvas.Background = new ImageBrush(Filter.ImageSourceFromBitmap(_image.ToBitmap().ToMat()));
 
         Width = _image.Width;
         Height = _image.Height;
@@ -103,7 +103,7 @@ public partial class PointSelectionWindow : Window
         graphics.DrawLine(Pens.DarkBlue, _sourcePoints[2], _sourcePoints[3]);
         graphics.DrawLine(Pens.DarkBlue, _sourcePoints[3], _sourcePoints[0]);
 
-        canvas.Background = new ImageBrush(Filter.BitmapSourceFromHBitmap(image.ToMat()));
+        canvas.Background = new ImageBrush(Filter.ImageSourceFromBitmap(image.ToMat()));
     }
 
 
