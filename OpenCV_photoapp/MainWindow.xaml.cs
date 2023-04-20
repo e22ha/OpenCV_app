@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
@@ -9,8 +10,11 @@ using Emgu.CV;
 using Emgu.CV.Structure;
 using Microsoft.Win32;
 using System.Windows.Controls;
+using System.Windows.Media;
 using Emgu.CV.CvEnum;
 using Emgu.CV.Util;
+using Brushes = System.Drawing.Brushes;
+using Point = System.Drawing.Point;
 
 
 namespace OpenCV_photoapp;
@@ -27,6 +31,7 @@ public partial class MainWindow
     private int _winTypeOp = 1;
     private bool _imageLoaded;
     private bool _filterApplied;
+    private Point _center; 
 
     public MainWindow()
     {
@@ -79,7 +84,10 @@ public partial class MainWindow
             Filter = "Image files (*.png;*.jpeg;*.jpg)|*.png;*.jpeg;*.jpg"
         };
         if (openFileDialog.ShowDialog() != true) return _imageLoaded;
-        Image.Source = new BitmapImage(new Uri(openFileDialog.FileName));
+        var imageSource = new BitmapImage(new Uri(openFileDialog.FileName));
+        Image.Source = imageSource;
+        Image.Height= imageSource.Height;
+        Image.Width= imageSource.Width;
         _originalMat = CvInvoke.Imread(((BitmapImage)Image.Source).UriSource.LocalPath);
         _filteredMat = new Mat();
         ToggleFilter.IsChecked = false;
@@ -489,9 +497,14 @@ public partial class MainWindow
 
     private void Rotate_btn(object sender, RoutedEventArgs e)
     {
+        _rotateMode = true;
         var rotateSlider = new WindowWithSlider("Rotate", -180, 180, 0);
         rotateSlider.ValueChanged += ApplyRotate;
-        rotateSlider.Closing += (s, args) => rotateSlider.ValueChanged -= ApplyRotate;
+        rotateSlider.Closing += (s, args) =>
+        {
+            rotateSlider.ValueChanged -= ApplyRotate;
+            _rotateMode = false;
+        };
         rotateSlider.Show();    }
 
     private void ApplyRotate(object sender, RoutedPropertyChangedEventArgs<double> e)
@@ -501,7 +514,7 @@ public partial class MainWindow
 
         var img = _originalMat.Clone().ToImage<Bgr, byte>();
 
-        _filteredMat = Filter.BinRotateImage(img, sX).ToBitmap().ToMat();
+        _filteredMat = Filter.BinRotateImage(img, sX, _center).ToBitmap().ToMat();
 
         Image.Source = Filter.ImageSourceFromBitmap(_filteredMat);    }
 
@@ -651,5 +664,13 @@ public partial class MainWindow
         _filteredMat = image.ToBitmap().ToMat();
         
         Image.Source = Filter.ImageSourceFromBitmap(_filteredMat);
+    }
+        bool _rotateMode;
+
+    private void Image_OnMouseRightButtonDown(object sender, MouseButtonEventArgs e)
+    {
+        if (!_rotateMode) return;
+        _center.X = (int)e.GetPosition(Image).X;
+        _center.Y = (int)e.GetPosition(Image).Y;
     }
 }

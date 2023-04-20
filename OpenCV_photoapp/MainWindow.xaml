@@ -92,7 +92,8 @@
         <Grid Grid.Column="0" Grid.Row="1" Margin="10" Background="#252525">
             <Image x:Name="Image" Source="Resources/placeholder.png" Height="Auto" HorizontalAlignment="Center"
                    VerticalAlignment="Center"
-                   MouseLeftButtonDown="Click_image" />
+                   MouseLeftButtonDown="Click_image"
+                   MouseRightButtonDown="Image_OnMouseRightButtonDown"/>
         </Grid>
         <StackPanel Grid.Column="0" Grid.Row="2" Margin=" 10 0" Orientation="Horizontal" VerticalAlignment="Center"
                     HorizontalAlignment="Right">

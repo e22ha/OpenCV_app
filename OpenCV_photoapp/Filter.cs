@@ -3,6 +3,7 @@ using System.CodeDom;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Numerics;
 using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media;
@@ -10,6 +11,8 @@ using System.Windows.Media.Imaging;
 using Emgu.CV;
 using Emgu.CV.CvEnum;
 using Emgu.CV.Structure;
+using Color = System.Drawing.Color;
+using Point = System.Drawing.Point;
 
 namespace OpenCV_photoapp;
 
@@ -395,15 +398,17 @@ public class Filter
         return newImage;
     }
 
-    public static Image<Bgr, byte> BinRotateImage(Image<Bgr, byte> img, double angle)
+    public static Image<Bgr, byte> BinRotateImage(Image<Bgr, byte> img, double angle, Point center)
     {
-        var centerX = img.Width / 2.0;
-        var centerY = img.Height / 2.0;
+        var centerX = center.X;
+        var centerY = center.Y;
         var radians = angle * Math.PI / 180.0;
         var cos = Math.Cos(radians);
         var sin = Math.Sin(radians);
 
         var newImage = new Image<Bgr, byte>(img.Width, img.Height);
+        
+        CvInvoke.Circle(newImage, center, 100, new Bgr(Color.Blue).MCvScalar, 10);
 
         for (var y = 0; y < newImage.Height; y++)
         {
