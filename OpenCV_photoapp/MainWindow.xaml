@@ -85,6 +85,7 @@
                     <MenuItem Header="Kaleidoscope" Style="{StaticResource MenuButtonStyle}" Click="kaleidoscope_btn"/>
                 </MenuItem>
                 <MenuItem Header="Homography" Style="{StaticResource MenuButtonStyle}" Click="Homography_btn"/>
+                <MenuItem Header="Color Range" Style="{StaticResource MenuButtonStyle}" Click="ColorRange_OnClick"/>
             </MenuItem>
             <MenuItem Header="About" Style="{StaticResource MenuButtonStyle}" />
         </Menu>
@@ -99,7 +100,6 @@
                     HorizontalAlignment="Right">
             <ToggleButton Name="ToggleFilter" Content="no_filter" Margin=" 0 0 10  0"
                           Style="{StaticResource ToggleButtonStyle}" Click="ToggleFilter_Click" />
-            <Button Content="compare" Style="{StaticResource ButtonStyle}" Click="ButtonBase_OnClick" />
         </StackPanel>
         <Grid Name="FilterPanel" Grid.Column="1" Grid.Row="1" Margin="10" IsEnabled="False">
             <StackPanel Orientation="Vertical">
@@ -177,10 +177,10 @@
                                                ValueChanged="SliderCore_OnValueChanged" />-->
                 </Grid>
                 <openCv2Photoapp:FilterControl x:Name="MathFilterControl" Title="Math filter" Margin="0 10"
-                                               TargetElementName="Math"
+                                               TargetElementName="MathPanel"
                                                CountRow="4"
                                                SwitchChanged="Math_filter_OnSwitchChanged" />
-                <StackPanel Name="Math" Height="0">
+                <StackPanel Name="MathPanel" Height="0">
                     <RadioButton x:Name="AddRadioButton" GroupName="Math" Content="Add" IsChecked="True"
                                  Click="MathRadioButton_OnClick" Foreground="Azure" />
                     <RadioButton x:Name="ExceptRadioButton" GroupName="Math" Content="Except"

@@ -1,8 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
-using System.IO;
-using System.Linq;
-using System.Numerics;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
@@ -10,11 +8,12 @@ using Emgu.CV;
 using Emgu.CV.Structure;
 using Microsoft.Win32;
 using System.Windows.Controls;
-using System.Windows.Media;
 using Emgu.CV.CvEnum;
 using Emgu.CV.Util;
-using Brushes = System.Drawing.Brushes;
+using static Emgu.CV.CvEnum.HoughModes;
+using Image = System.Windows.Controls.Image;
 using Point = System.Drawing.Point;
+using PointCollection = Emgu.CV.PointCollection;
 
 
 namespace OpenCV_photoapp;
@@ -31,7 +30,7 @@ public partial class MainWindow
     private int _winTypeOp = 1;
     private bool _imageLoaded;
     private bool _filterApplied;
-    private Point _center; 
+    private Point _center;
 
     public MainWindow()
     {
@@ -49,18 +48,14 @@ public partial class MainWindow
         var screenWidth = SystemParameters.PrimaryScreenWidth;
         var screenHeight = SystemParameters.PrimaryScreenHeight;
 
-        Width = screenWidth * 50 / 100;
-        Height = screenHeight * 50 / 100;
+        Width = screenWidth * 0.5;
+        Height = screenHeight * 0.5;
 
-        Left = (screenWidth - Width) / 6 * 1;
-        Top = (screenHeight - Height) / 2;
+        Left = screenWidth/2 - Width/2;
+        Top = screenHeight/2 - Height/2;
     }
 
 
-    private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
-    {
-        throw new NotImplementedException();
-    }
 
     private void ToggleFilter_Click(object sender, RoutedEventArgs e)
     {
@@ -86,9 +81,8 @@ public partial class MainWindow
         if (openFileDialog.ShowDialog() != true) return _imageLoaded;
         var imageSource = new BitmapImage(new Uri(openFileDialog.FileName));
         Image.Source = imageSource;
-        Image.Height= imageSource.Height;
-        Image.Width= imageSource.Width;
-        _originalMat = CvInvoke.Imread(((BitmapImage)Image.Source).UriSource.LocalPath);
+        _origImg = new Image<Bgr, byte>(((BitmapImage)Image.Source).UriSource.LocalPath);
+        _originalMat = _origImg.Mat;
         _filteredMat = new Mat();
         ToggleFilter.IsChecked = false;
         return _imageLoaded = true;
@@ -471,7 +465,7 @@ public partial class MainWindow
 
         Image.Source = Filter.ImageSourceFromBitmap(_filteredMat);
     }
-    
+
 
     private void ApplyShear(object sender, RoutedPropertyChangedEventArgs<double> e)
     {
@@ -485,7 +479,7 @@ public partial class MainWindow
 
         Image.Source = Filter.ImageSourceFromBitmap(_filteredMat);
     }
-    
+
 
     private void Shear_btn(object sender, RoutedEventArgs e)
     {
@@ -505,7 +499,8 @@ public partial class MainWindow
             rotateSlider.ValueChanged -= ApplyRotate;
             _rotateMode = false;
         };
-        rotateSlider.Show();    }
+        rotateSlider.Show();
+    }
 
     private void ApplyRotate(object sender, RoutedPropertyChangedEventArgs<double> e)
     {
@@ -516,44 +511,45 @@ public partial class MainWindow
 
         _filteredMat = Filter.BinRotateImage(img, sX, _center).ToBitmap().ToMat();
 
-        Image.Source = Filter.ImageSourceFromBitmap(_filteredMat);    }
+        Image.Source = Filter.ImageSourceFromBitmap(_filteredMat);
+    }
 
     private void FlipH_btn(object sender, RoutedEventArgs e)
     {
         var img = _originalMat.Clone().ToImage<Bgr, byte>();
 
         _filteredMat = Filter.Flip(img, true, false).ToBitmap().ToMat();
-        
+
         Image.Source = Filter.ImageSourceFromBitmap(_filteredMat);
     }
-    
+
     private void FlipV_btn(object sender, RoutedEventArgs e)
     {
         var img = _originalMat.Clone().ToImage<Bgr, byte>();
 
         _filteredMat = Filter.Flip(img, false, true).ToBitmap().ToMat();
-        
+
         Image.Source = Filter.ImageSourceFromBitmap(_filteredMat);
     }
-    
+
     private void FlipB_btn(object sender, RoutedEventArgs e)
     {
         var img = _originalMat.Clone().ToImage<Bgr, byte>();
 
         _filteredMat = Filter.Flip(img, true, true).ToBitmap().ToMat();
-        
+
         Image.Source = Filter.ImageSourceFromBitmap(_filteredMat);
     }
-    
+
     private void kaleidoscope_btn(object sender, RoutedEventArgs e)
     {
         var img = _originalMat.Clone().ToImage<Bgr, byte>();
 
         _filteredMat = Filter.ApplyKaleidoscopeEffect(img, 4).ToBitmap().ToMat();
-        
+
         Image.Source = Filter.ImageSourceFromBitmap(_filteredMat);
     }
-    
+
     private void Homography_btn(object sender, RoutedEventArgs e)
     {
         // Создаем новое окно для выбора точек
@@ -564,30 +560,30 @@ public partial class MainWindow
         pointsWindow.ShowDialog(); // Открываем окно для выбора точек
 
         var srcPoints = pointsWindow.GetSourcePoints();
-        
-        var destPoints= new PointF[]{
+
+        var destPoints = new PointF[]
+        {
             // плоскость, на которую осуществляется проекция,
             // задаётся четыремя точками
             new PointF(0, 0),
-            new PointF(0, _originalMat.Height -1),
-            new PointF(_originalMat.Width -1, _originalMat.Height -1),
-            new PointF(_originalMat.Width -1, 0)};
+            new PointF(0, _originalMat.Height - 1),
+            new PointF(_originalMat.Width - 1, _originalMat.Height - 1),
+            new PointF(_originalMat.Width - 1, 0)
+        };
         if (srcPoints == null || destPoints == null)
         {
             return;
         }
-        
+
         // Выполняем гомографическое преобразование
         var homographyMatrix = CvInvoke.GetPerspectiveTransform(srcPoints, destPoints);
         var destImage = new Mat();
         CvInvoke.WarpPerspective(_originalMat, destImage, homographyMatrix, _originalMat.Size);
-        
+
         // Открываем новое окно для отображения результатов
         CvInvoke.Imshow("Homography Result", destImage);
         CvInvoke.WaitKey(0);
     }
-
-
 
 
     private void FindFilterControl_OnSwitchChanged(object sender, bool e)
@@ -602,75 +598,138 @@ public partial class MainWindow
                 break;
         }
     }
-    
+
     private void ApplyFindFilter()
     {
         var img = _originalMat.Clone().ToImage<Gray, byte>();
 
-        var threshold = new Gray(200); 
-        var color= new Gray(255);
+        var threshold = new Gray(100);
+        var color = new Gray(255);
 
-        var image = img.SmoothGaussian(5).ThresholdBinary(threshold, color);
-        
+        var smoothGaussian = img.SmoothGaussian(5);
+        var thresholdBinary = smoothGaussian.ThresholdBinary(threshold, color);
+
+        CvInvoke.CvtColor(img, img, ColorConversion.Gray2Bgr);
         var contours = new VectorOfVectorOfPoint();
-        CvInvoke.FindContours(image,
+        CvInvoke.FindContours(thresholdBinary,
             contours,
             null,
-            RetrType.List, 
+            RetrType.List,
             ChainApproxMethod.ChainApproxSimple);
 
-
-        var contoursImage = new Mat();
-        CvInvoke.CvtColor(image.Clone().CopyBlank(), contoursImage, ColorConversion.Gray2Bgr); 
-        // CvInvoke.DrawContours(contoursImage, contours, -1, new MCvScalar(250, 0, 250), 2);
-        // CvInvoke.Imshow("Contours Image", contoursImage);
-        
         // Определим форму каждого контура и нарисуем его в соответствующем цвете
         for (var i = 0; i < contours.Size; i++)
         {
             var contour = contours[i];
             var area = CvInvoke.ContourArea(contour);
-            if (area < 100)
+            if (area < 256)
             {
                 continue;
             }
-            var epsilon = CvInvoke.ArcLength(contour, true) * 0.1;
-            var approx = new VectorOfPoint();
-            CvInvoke.ApproxPolyDP(contour, approx, epsilon, true);
 
+            var epsilon = CvInvoke.ArcLength(contour, true) * 0.05;
+            var approx = new VectorOfPoint();
+            CvInvoke.ApproxPolyDP(
+                contour, approx,
+                epsilon,
+                true);
+
+            var edges = PointCollection.PolyLine(approx.ToArray(), true);
             switch (approx.Size)
             {
                 // Треугольник
                 case 3:
-                    CvInvoke.DrawContours(contoursImage, contours, i, new MCvScalar(0, 255, 0), 2);
+                    CvInvoke.DrawContours(img, contours, i, new MCvScalar(0, 255, 0), 2);
                     break;
                 // Четырехугольник
                 case 4:
-                    CvInvoke.DrawContours(contoursImage, contours, i, new MCvScalar(255, 0, 0), 2);
-                    break;
-                // Круг
-                case > 4:
-                    CvInvoke.DrawContours(contoursImage, contours, i, new MCvScalar(0, 0, 255), 2);
+                    const int delta = 10;
+                    for (var j = 0; j < edges.Length; j++)
+                    {
+                        var an = Math.Abs(edges[(j + 1) % edges.Length].GetExteriorAngleDegree(edges[j]));
+                        if (an is < 90 - delta or > 90 + delta) break;
+                    }
+
+                    CvInvoke.DrawContours(img, contours, i, new MCvScalar(255, 0, 0), 2);
                     break;
             }
         }
 
+        // Круг
+        var circles = new List<CircleF>(
+            CvInvoke.HoughCircles(
+                smoothGaussian, Gradient,
+                dp: 1.0, minDist: 250, 100, 36, minRadius: 10, maxRadius: 250)
+        );
+        foreach (var c in circles)
+        {
+            var center = new Point((int)c.Center.X, (int)c.Center.Y);
+            CvInvoke.Circle(img, center, (int)c.Radius, new MCvScalar(0, 0, 255), 2);
+        }
+
         // Отобразим изображение с выделенными объектами
-        CvInvoke.Imshow("Contours Image", contoursImage);
+        CvInvoke.Imshow("Contours Image", img);
 
 
-        
-        
-        _filteredMat = image.ToBitmap().ToMat();
-        
+        _filteredMat = thresholdBinary.ToBitmap().ToMat();
+
         Image.Source = Filter.ImageSourceFromBitmap(_filteredMat);
     }
-        bool _rotateMode;
+
+    private bool _rotateMode;
+    private bool _colorGet;
+    private byte _colorRangeBase = 20;
+    private Image<Bgr, byte> _origImg;
+    private Image<Gray, byte> _hueChannel;
 
     private void Image_OnMouseRightButtonDown(object sender, MouseButtonEventArgs e)
     {
-        if (!_rotateMode) return;
-        _center.X = (int)e.GetPosition(Image).X;
-        _center.Y = (int)e.GetPosition(Image).Y;
+        if (_rotateMode)
+        {
+            var image = sender as Image;
+            _center.X = (int)e.GetPosition(image).X;
+            _center.Y = (int)e.GetPosition(image).Y;
+
+            // MessageBox.Show("center: " + _center.X + ", " + _center.Y+";\n"
+            //                 +"image Source size: "+ image.Source.Height + " x " + image.Source.Width+"\n"
+            //                 +"image size: "+ Image.Height + " x " + Image.Width+"\n"
+            //                 + _originalMat.Height + _originalMat.Width);
+        }
+
+        else if (_colorGet)
+        {
+            var image = sender as Image;
+            var point = e.GetPosition(image);
+
+            if (image.Source is not BitmapSource bitmapSource)
+                return;
+
+            var x = (int)(point.X / image.ActualWidth * bitmapSource.PixelWidth);
+            var y = (int)(point.Y / image.ActualHeight * bitmapSource.PixelHeight);
+
+            var pixel = new byte[4];
+            var bitmap = new WriteableBitmap(bitmapSource);
+            bitmap.CopyPixels(new Int32Rect(x, y, 1, 1), pixel, 4, 0);
+
+            // Вызов метода с индексом цветового канала
+            ColorRange(pixel[0]);
+        }
+    }
+
+    private void ColorRange_OnClick(object sender, RoutedEventArgs e)
+    {
+        ColorRange(30);
+        _colorGet = true;
+    }
+
+    private void ColorRange(byte color)
+    {
+        var hsvImage = _origImg.Convert<Hsv, byte>();
+        _hueChannel = hsvImage.Split()[0];
+
+        const byte rangeDelta = 10;
+        var resultImage = _hueChannel.InRange(new Gray(color - rangeDelta), new Gray(color + rangeDelta));
+
+        CvInvoke.Imshow("Result", resultImage);
     }
 }
