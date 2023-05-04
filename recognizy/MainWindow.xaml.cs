@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Net.Mime;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -25,9 +24,10 @@ public partial class MainWindow : Window
     private bool _videoLoaded;
     private Mat _originalMat;
     private Image<Bgr, byte> _origImg;
-    private Image<Bgr, byte> _origImg_BoundingBox;
 
     private List<Rectangle> listOfRectangles = new List<Rectangle>();
+    private Image<Bgr, byte> _origImg_BoundingBox;
+
     private List<Rectangle> listOfFaces = new List<Rectangle>();
     private bool _selectionMode;
 
@@ -116,20 +116,20 @@ public partial class MainWindow : Window
         CvInvoke.FindContours(thresh, contours, null, RetrType.List, ChainApproxMethod.ChainApproxSimple);
         UpdateInfo(false, "contours count: " + contours.Size.ToString());
 
-        _origImg_BoundingBox = _origImg.Copy();
+        var output = _origImg.Copy();
         var temp = 0;
         for (var i = 0; i < contours.Size; i++)
         {
             if (!(CvInvoke.ContourArea(contours[i]) > 50)) continue;
             var rect = CvInvoke.BoundingRectangle(contours[i]);
             listOfRectangles.Add(rect);
-            _origImg_BoundingBox.Draw(rect, new Bgr(Color.Blue), 1);
+            output.Draw(rect, new Bgr(Color.Blue), 1);
             temp++;
         }
 
         UpdateInfo(false, "contoursLargeArea count: " + temp);
 
-        Image.Source = Filter.ImageSourceFromBitmap(_origImg_BoundingBox.Mat);
+        Image.Source = Filter.ImageSourceFromBitmap(output.Mat);
     }
 
     private void Image_OnMouseDown(object sender, MouseButtonEventArgs e)
