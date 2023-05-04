@@ -8,21 +8,20 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <Resource Include="Resources\placeholder.png" />
+    </ItemGroup>
+
+    <ItemGroup>
       <PackageReference Include="Emgu.CV" Version="4.7.0.5276" />
-      <PackageReference Include="Emgu.CV.Bitmap" Version="4.6.0.5131" />
       <PackageReference Include="Emgu.CV.runtime.windows" Version="4.7.0.5276" />
     </ItemGroup>
 
     <ItemGroup>
-      <Resource Include="Resources\placeholder.png" />
-      <None Remove="Resources\defualt_image.png" />
-      <Resource Include="Resources\default_image.png" />
-      <None Remove="Resources\defualt_mask.png" />
-      <Resource Include="Resources\default_mask.png" />
+      <ProjectReference Include="..\OpenCV_photoapp\OpenCV_photoapp.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-      <None Remove="log4net.config" />
+      <Folder Include="OCR\" />
     </ItemGroup>
 
 </Project>
