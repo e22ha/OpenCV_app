@@ -22,13 +22,12 @@ public partial class MainWindow : Window
 {
     private bool _imageLoaded;
     private bool _videoLoaded;
-    private Mat _originalMat;
     private Image<Bgr, byte> _origImg;
 
-    private List<Rectangle> listOfRectangles = new List<Rectangle>();
-    private Image<Bgr, byte> _origImg_BoundingBox;
+    private readonly List<Rectangle> _listOfRectangles = new();
+    private Image<Bgr, byte> _origImgBoundingBox;
 
-    private List<Rectangle> listOfFaces = new List<Rectangle>();
+    private readonly List<Rectangle> _listOfFaces = new();
     private bool _selectionMode;
 
     public MainWindow()
@@ -66,7 +65,6 @@ public partial class MainWindow : Window
 
         Image.Source = imageSource;
         _origImg = new Image<Bgr, byte>(uriString);
-        _originalMat = _origImg.Mat;
         return true;
     }
 
@@ -85,6 +83,7 @@ public partial class MainWindow : Window
         Media.Visibility = Visibility.Visible;
 
         Media.Source = new Uri(uriString);
+        VideoCapture v = new VideoCapture();
         return true;
     }
 
@@ -122,7 +121,7 @@ public partial class MainWindow : Window
         {
             if (!(CvInvoke.ContourArea(contours[i]) > 50)) continue;
             var rect = CvInvoke.BoundingRectangle(contours[i]);
-            listOfRectangles.Add(rect);
+            _listOfRectangles.Add(rect);
             output.Draw(rect, new Bgr(Color.Blue), 1);
             temp++;
         }
@@ -136,7 +135,7 @@ public partial class MainWindow : Window
     {
         if (!_selectionMode) return;
         RectForRecognize = GetClickRectangle(e.GetPosition(Image));
-        var image = _origImg_BoundingBox.Copy();
+        var image = _origImgBoundingBox.Copy();
         image.Draw(RectForRecognize, new Bgr(Color.GreenYellow), 1);
         Image.Source = Filter.ImageSourceFromBitmap(image.Mat);
     }
@@ -144,8 +143,8 @@ public partial class MainWindow : Window
     private Rectangle GetClickRectangle(Point pos)
     {
         var r = new Rectangle();
-        if (listOfRectangles.Count <= 0) return r;
-        r = listOfRectangles.Find(i =>
+        if (_listOfRectangles.Count <= 0) return r;
+        r = _listOfRectangles.Find(i =>
             i.Top < pos.Y &
             i.Bottom > pos.Y &
             i.Left < pos.X &
@@ -158,7 +157,7 @@ public partial class MainWindow : Window
     private readonly Tesseract _ocr = new("C:\\Code\\AOCI\\OpenCV_app\\recognizy\\OCR", "eng",
         OcrEngineMode.TesseractLstmCombined);
 
-    private CascadeClassifier _cascadeClassifier =
+    private readonly CascadeClassifier _cascadeClassifier =
         new(@"C:\Code\AOCI\OpenCV_app\recognizy\Faces\haarcascade_frontalface_default.xml");
 
     private void RecTextBtn_OnClick(object sender, RoutedEventArgs e)
@@ -187,12 +186,12 @@ public partial class MainWindow : Window
             using (var ugray = new Mat())
             {
                 CvInvoke.CvtColor(_origImg, ugray, ColorConversion.Bgr2Gray);
-                listOfFaces.AddRange(_cascadeClassifier.DetectMultiScale(ugray, 1.1, 10, new Size(20, 20)));
+                _listOfFaces.AddRange(_cascadeClassifier.DetectMultiScale(ugray, 1.1, 10, new Size(20, 20)));
             }
-            UpdateInfo(false, "Count of face: "+ listOfFaces.Count);
+            UpdateInfo(false, "Count of face: "+ _listOfFaces.Count);
 
                 var output = _origImg.Clone();
-                foreach (var t in listOfFaces)
+                foreach (var t in _listOfFaces)
                 {
                     output.Draw(t, new Bgr(Color.GreenYellow), 5);
                 }

@@ -21,7 +21,12 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Folder Include="Faces\" />
       <Folder Include="OCR\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="Faces\haarcascade_frontalface_default.xml" />
     </ItemGroup>
 
 </Project>
