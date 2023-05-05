@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
+using System.Windows.Threading;
 using Emgu.CV;
 using Emgu.CV.CvEnum;
 using Emgu.CV.OCR;
@@ -23,9 +25,9 @@ public partial class MainWindow : Window
     private bool _imageLoaded;
     private bool _videoLoaded;
     private Image<Bgr, byte> _origImg;
+    private Image<Bgr, byte> _origImg_BoundingBox;
 
     private readonly List<Rectangle> _listOfRectangles = new();
-    private Image<Bgr, byte> _origImgBoundingBox;
 
     private readonly List<Rectangle> _listOfFaces = new();
     private bool _selectionMode;
@@ -59,10 +61,6 @@ public partial class MainWindow : Window
         UpdateInfo(true, "Image\nPath to image: " + uriString + ";");
         var imageSource = new BitmapImage(new Uri(uriString));
 
-        Media.Source = null;
-        Media.Visibility = Visibility.Hidden;
-        Image.Visibility = Visibility.Visible;
-
         Image.Source = imageSource;
         _origImg = new Image<Bgr, byte>(uriString);
         return true;
@@ -75,16 +73,54 @@ public partial class MainWindow : Window
             Filter = "Video files (*.mp4;*.gif;)|*.mp4;*.gif;"
         };
         if (openFileDialog.ShowDialog() != true) return false;
-        var uriString = openFileDialog.FileName;
-        UpdateInfo(true, "Video\nPath to video: " + uriString + ";");
+        videoString = openFileDialog.FileName;
+        UpdateInfo(true, "Video\nPath to video: " + videoString + ";");
+        _capture = new VideoCapture(videoString);
+        var framrate = _capture.Get(CapProp.Fps);
 
-        Image.Source = null;
-        Image.Visibility = Visibility.Hidden;
-        Media.Visibility = Visibility.Visible;
-
-        Media.Source = new Uri(uriString);
-        VideoCapture v = new VideoCapture();
+        timer.Tick += ProcessFrame;
+        timer.Interval = new TimeSpan(0, 0, (int)(1 / framrate));
+        timer.Start();
         return true;
+    }
+
+    private DispatcherTimer timer = new DispatcherTimer();
+    private Mat frame;
+
+    private void ProcessFrame(object sender, EventArgs e)
+    {
+        frame = _capture.QueryFrame(); //Read(frame);
+
+        if (frame.IsEmpty)
+        {
+            UpdateInfo(false, "frame is empty");
+            return;
+        }
+
+        _listOfFaces.Clear();
+
+        UpdateInfo(true, "Face recognition start...");
+        using (var ugray = new Mat())
+        {
+            CvInvoke.CvtColor(frame, ugray, ColorConversion.Bgr2Gray);
+            _listOfFaces.AddRange(_cascadeClassifier.DetectMultiScale(ugray, 1.1, 10, new Size(20, 20)));
+        }
+
+        UpdateInfo(false, "Count of face: " + _listOfFaces.Count);
+
+        var output = frame.Clone().ToImage<Bgr, byte>();
+        foreach (var t in _listOfFaces)
+        {
+            // output.Draw(t, new Bgr(Color.GreenYellow), 5);
+            output.ROI = t;
+            var small = frame.ToImage<Bgr, byte>().Resize(t.Width, t.Height, Inter.Nearest); //создание
+            //копирование изображения small на изображение res с использованием маски копирования mask
+            CvInvoke.cvCopy(small, output, small.Split()[0]);
+            output.ROI = Rectangle.Empty;
+        }
+        Image.Dispatcher.Invoke(() => { Image.Source = Filter.ImageSourceFromBitmap(output.Mat); });
+
+
     }
 
     private void Load(object sender, RoutedEventArgs e)
@@ -109,33 +145,33 @@ public partial class MainWindow : Window
         UpdateInfo(false, "Search contours starting...");
         var thresh = _origImg.Clone().Convert<Gray, byte>();
         thresh._ThresholdBinaryInv(new Gray(128), new Gray(255));
-        thresh.Dilate(5);
+        thresh._Dilate(5);
 
         var contours = new VectorOfVectorOfPoint();
         CvInvoke.FindContours(thresh, contours, null, RetrType.List, ChainApproxMethod.ChainApproxSimple);
         UpdateInfo(false, "contours count: " + contours.Size.ToString());
 
-        var output = _origImg.Copy();
+        _origImg_BoundingBox = _origImg.Copy();
         var temp = 0;
         for (var i = 0; i < contours.Size; i++)
         {
             if (!(CvInvoke.ContourArea(contours[i]) > 50)) continue;
             var rect = CvInvoke.BoundingRectangle(contours[i]);
             _listOfRectangles.Add(rect);
-            output.Draw(rect, new Bgr(Color.Blue), 1);
+            _origImg_BoundingBox.Draw(rect, new Bgr(Color.Blue), 1);
             temp++;
         }
 
         UpdateInfo(false, "contoursLargeArea count: " + temp);
 
-        Image.Source = Filter.ImageSourceFromBitmap(output.Mat);
+        Image.Source = Filter.ImageSourceFromBitmap(_origImg_BoundingBox.Mat);
     }
 
     private void Image_OnMouseDown(object sender, MouseButtonEventArgs e)
     {
         if (!_selectionMode) return;
         RectForRecognize = GetClickRectangle(e.GetPosition(Image));
-        var image = _origImgBoundingBox.Copy();
+        var image = _origImg_BoundingBox.Copy();
         image.Draw(RectForRecognize, new Bgr(Color.GreenYellow), 1);
         Image.Source = Filter.ImageSourceFromBitmap(image.Mat);
     }
@@ -188,18 +224,23 @@ public partial class MainWindow : Window
                 CvInvoke.CvtColor(_origImg, ugray, ColorConversion.Bgr2Gray);
                 _listOfFaces.AddRange(_cascadeClassifier.DetectMultiScale(ugray, 1.1, 10, new Size(20, 20)));
             }
-            UpdateInfo(false, "Count of face: "+ _listOfFaces.Count);
 
-                var output = _origImg.Clone();
-                foreach (var t in _listOfFaces)
-                {
-                    output.Draw(t, new Bgr(Color.GreenYellow), 5);
-                }
+            UpdateInfo(false, "Count of face: " + _listOfFaces.Count);
 
-                Image.Source = Filter.ImageSourceFromBitmap(output.Mat);
+            var output = _origImg.Clone();
+            foreach (var t in _listOfFaces)
+            {
+                output.Draw(t, new Bgr(Color.GreenYellow), 5);
+            }
+
+            Image.Source = Filter.ImageSourceFromBitmap(output.Mat);
         }
         else if (_videoLoaded)
         {
+            UpdateInfo(true, "Video face recognition start...");
         }
     }
+
+    private string videoString;
+    private VideoCapture _capture;
 }

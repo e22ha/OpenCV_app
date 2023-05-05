@@ -16,9 +16,8 @@
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
         <Image Grid.Column="0" x:Name="Image" Source="Resources/placeholder.png" Height="Auto" HorizontalAlignment="Center" MouseDown="Image_OnMouseDown"/>
-        <MediaElement Grid.Column="0" x:Name="Media" Height="Auto" HorizontalAlignment="Center"/>
-        <TextBlock Grid.Column="1" Name="InfoBlock" Text="Hello!" TextWrapping="Wrap"/>
-        <StackPanel Grid.Row="1" Grid.ColumnSpan="2" Orientation="Horizontal">
+        <TextBlock Grid.Row="0" Grid.Column="1" Name="InfoBlock" Text="Hello!" TextWrapping="Wrap"/>
+        <StackPanel Grid.Row="1" Grid.ColumnSpan="2" Grid.Column="0" Orientation="Horizontal">
             <Button Name="loadImageBtn" Content="Load img" Margin="5" Padding="5 10" Click="Load"/>
             <Button Name="loadVideoBtn" Content="Load video" Margin="5" Padding="5 10" Click="Load"/>
             <Button Name="FButton" Content="Select" Margin="5" Padding="5 10" Click="FButton_OnClick"/>
