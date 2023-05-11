@@ -20,9 +20,11 @@
         <StackPanel Grid.Row="1" Grid.ColumnSpan="2" Grid.Column="0" Orientation="Horizontal">
             <Button Name="loadImageBtn" Content="Load img" Margin="5" Padding="5 10" Click="Load"/>
             <Button Name="loadVideoBtn" Content="Load video" Margin="5" Padding="5 10" Click="Load"/>
+            <Button Name="stopBtn" Content="Stop" Margin="5" Padding="5 10" Click="StopBtn_OnClick"/>
             <Button Name="FButton" Content="Select" Margin="5" Padding="5 10" Click="FButton_OnClick"/>
             <Button Name="RecTextBtn" Content="Recognize text" Margin="5" Padding="5 10" Click="RecTextBtn_OnClick"/>
             <Button Name="RecFaces" Content="Recognize Face" Margin="5" Padding="5 10" Click="RecFaces_OnClick"/>
+            <Button Name="RecAction" Content="Recognize Action" Margin="5" Padding="5 10" Click="RecAction_OnClick"/>
         </StackPanel>
     </Grid>
 </Window>

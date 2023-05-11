@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -78,16 +79,14 @@ public partial class MainWindow : Window
         _capture = new VideoCapture(videoString);
         var framrate = _capture.Get(CapProp.Fps);
 
-        timer.Tick += ProcessFrame;
         timer.Interval = new TimeSpan(0, 0, (int)(1 / framrate));
-        timer.Start();
         return true;
     }
 
     private DispatcherTimer timer = new DispatcherTimer();
     private Mat frame;
 
-    private void ProcessFrame(object sender, EventArgs e)
+    private void RecFacesProcessFrame(object sender, EventArgs e)
     {
         frame = _capture.QueryFrame(); //Read(frame);
 
@@ -238,9 +237,78 @@ public partial class MainWindow : Window
         else if (_videoLoaded)
         {
             UpdateInfo(true, "Video face recognition start...");
+            timer.Tick += RecFacesProcessFrame;
+            timer.Start();
         }
     }
 
     private string videoString;
     private VideoCapture _capture;
+
+    private void StopBtn_OnClick(object sender, RoutedEventArgs e)
+    {
+        _capture.Stop();
+        timer.Stop();
+    }
+
+    private void RecAction_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (!_videoLoaded) return;
+        timer.Tick += RecActionProcessFrame;
+        timer.Start();
+    }
+
+    private void RecActionProcessFrame(object sender, EventArgs e)
+    {
+        var mat = new Mat();
+        _capture.Retrieve(mat);
+
+        var current = mat.ToImage<Gray, byte>();
+
+        var foregroundMask = current.CopyBlank();
+        _subtractor.Apply(current, foregroundMask);
+
+        foregroundMask._ThresholdBinary(new Gray(120), new Gray(255));
+
+        //foregroundMask.Erode(3);
+        //foregroundMask.Dilate(4);
+
+        foregroundMask = FilterMask(foregroundMask);
+
+        var contours = new VectorOfVectorOfPoint();
+
+        CvInvoke.FindContours(foregroundMask, contours, null, RetrType.List, ChainApproxMethod.ChainApproxSimple);
+        var output = mat.ToImage<Bgr, byte>().Copy();
+
+        for (var i = 0; i < contours.Size; i++)
+        {
+            if (!(CvInvoke.ContourArea(contours[i], false) > 50)) continue; //игнорирование маленьких контуров
+            var rect = CvInvoke.BoundingRectangle(contours[i]);
+            output.Draw(rect, new Bgr(Color.Green), 2);
+        }
+
+        Image.Source = Filter.ImageSourceFromBitmap(output.Mat);
+    }
+
+    BackgroundSubtractorMOG2 _subtractor = new BackgroundSubtractorMOG2(500, 16, true);
+
+    private static Image<Gray, byte> FilterMask(Image<Gray, byte> mask)
+    {
+        var anchor = new System.Drawing.Point(-1, -1);
+        var borderValue = new MCvScalar(1);
+        // создание структурного элемента заданного размера и формы для морфологических операций
+        var kernel = CvInvoke.GetStructuringElement(ElementShape.Ellipse, new Size(2, 2), anchor);
+        // заполнение небольших тёмных областей
+        var closing = mask.MorphologyEx(MorphOp.Close, kernel, anchor, 3, BorderType.Default, borderValue);
+        // удаление шумов
+        var opening = closing.MorphologyEx(MorphOp.Open, kernel, anchor, 3, BorderType.Default, borderValue);
+        // расширение для слияния небольших смежных областей
+        var dilation = opening.Dilate(8);
+
+        var erosion = dilation.Erode(5);
+
+        // пороговое преобразование для удаления теней
+        var threshold = erosion.ThresholdBinary(new Gray(240), new Gray(255));
+        return threshold;
+    }
 }
