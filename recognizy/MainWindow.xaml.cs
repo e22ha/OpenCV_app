@@ -282,12 +282,13 @@ public partial class MainWindow : Window
 
         for (var i = 0; i < contours.Size; i++)
         {
-            if (!(CvInvoke.ContourArea(contours[i], false) > 50)) continue; //игнорирование маленьких контуров
+            if (!(CvInvoke.ContourArea(contours[i], false) > 100)) continue; //игнорирование маленьких контуров
             var rect = CvInvoke.BoundingRectangle(contours[i]);
-            output.Draw(rect, new Bgr(Color.Green), 2);
+            output.Draw(rect, new Bgr(Color.Lime), 4);
         }
 
-        Image.Source = Filter.ImageSourceFromBitmap(output.Mat);
+        Image.Source = Filter.ImageSourceFromBitmap(foregroundMask.Mat);
+        // Image.Source = Filter.ImageSourceFromBitmap(output.Mat);
     }
 
     BackgroundSubtractorMOG2 _subtractor = new BackgroundSubtractorMOG2(500, 16, true);
@@ -303,12 +304,12 @@ public partial class MainWindow : Window
         // удаление шумов
         var opening = closing.MorphologyEx(MorphOp.Open, kernel, anchor, 3, BorderType.Default, borderValue);
         // расширение для слияния небольших смежных областей
-        var dilation = opening.Dilate(8);
-
-        var erosion = dilation.Erode(5);
+        opening._Erode(2);
+        opening._Dilate(10);
+        opening._Erode(8);
 
         // пороговое преобразование для удаления теней
-        var threshold = erosion.ThresholdBinary(new Gray(240), new Gray(255));
+        var threshold = opening.ThresholdBinary(new Gray(240), new Gray(255));
         return threshold;
     }
 }
